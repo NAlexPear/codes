@@ -2,6 +2,14 @@
 
 Codes is a project for converting medical dictations into billing codes.
 
+## Demo
+
+[![Codes CLI streaming demo](docs/assets/codes-cli-full-demo.png)](docs/assets/codes-cli-full-demo.mp4)
+
+[Watch the full demo](docs/assets/codes-cli-full-demo.mp4) to see the
+interactive loader, color-coded results, and a provisional streaming table
+update in place when the dictation ends by voice command.
+
 ## Usage
 
 Set `TYPESAFE_API_KEY`, then provide a dictation as a file or through stdin. The
