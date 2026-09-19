@@ -5,6 +5,10 @@ command -v node >/dev/null 2>&1 || {
   echo "Node.js is required but was not found." >&2
   exit 1
 }
+command -v pnpm >/dev/null 2>&1 || {
+  echo "pnpm is required but was not found." >&2
+  exit 1
+}
 
 node_major="$(node -p 'process.versions.node.split(".")[0]')"
 if ((node_major < 24)); then

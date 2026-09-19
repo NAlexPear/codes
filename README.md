@@ -16,16 +16,16 @@ as the implementation takes shape.
 
 ## Development
 
-Use Node.js 24 or newer and npm:
+Use Node.js 24 or newer and pnpm:
 
 ```sh
-npm ci
-npm run check
+pnpm install --frozen-lockfile
+pnpm check
 ```
 
-`npm run check` enforces Oxfmt formatting, all Oxlint rule categories,
-type-aware linting, strict TypeScript checks, and tests. Unit tests use only
-Node's built-in `node:test` and `node:assert/strict` modules.
+`pnpm check` enforces Oxfmt formatting, all Oxlint rule categories, type-aware
+linting, strict TypeScript checks, and tests. Unit tests use only Node's
+built-in `node:test` and `node:assert/strict` modules.
 
 ## License
 

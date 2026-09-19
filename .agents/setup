@@ -9,8 +9,8 @@ command -v node >/dev/null 2>&1 || {
   echo "Node.js is required but was not found." >&2
   exit 1
 }
-command -v npm >/dev/null 2>&1 || {
-  echo "npm is required but was not found." >&2
+command -v pnpm >/dev/null 2>&1 || {
+  echo "pnpm is required but was not found." >&2
   exit 1
 }
 
@@ -20,13 +20,13 @@ if ((node_major < 24)); then
   exit 1
 fi
 
-echo "Using Node.js $(node --version) and npm $(npm --version)."
+echo "Using Node.js $(node --version) and pnpm $(pnpm --version)."
 
-if [[ -f package-lock.json ]]; then
-  echo "Installing npm dependencies from package-lock.json..."
-  npm ci --no-audit --no-fund
+if [[ -f pnpm-lock.yaml ]]; then
+  echo "Installing pnpm dependencies from pnpm-lock.yaml..."
+  pnpm install --frozen-lockfile
 elif [[ -f package.json ]]; then
-  echo "package.json exists without package-lock.json; commit a lockfile for reproducible setup." >&2
+  echo "package.json exists without pnpm-lock.yaml; commit a lockfile for reproducible setup." >&2
   exit 1
 else
   echo "No Node.js package manifest yet; dependency installation skipped."
