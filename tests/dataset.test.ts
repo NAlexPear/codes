@@ -1,14 +1,18 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
+import catalogData from '../data/billing-codes.json' with { type: 'json' };
+import syntheticCasesData from '../data/hand-surgery-dictations.json' with { type: 'json' };
+import sourceCasesData from '../data/hand-surgery-source-evals.json' with { type: 'json' };
+import sourcesData from '../data/hand-surgery-sources.json' with { type: 'json' };
 import { buildJevRequest, parseCatalog } from '../src/codes.ts';
 
-const EXPECTED_FIXTURES = 10;
-const EXPECTED_CATALOG_CODES = 90;
-const EXPECTED_CORPUS_CODES = 33;
-const EXPECTED_CPT_CODES = 50;
+const EXPECTED_FIXTURES = 46;
+const EXPECTED_CATALOG_CODES = 91;
+const EXPECTED_CORPUS_CODES = 45;
+const EXPECTED_CPT_CODES = 51;
 const EXPECTED_ICD10_CODES = 40;
+const EXPECTED_SOURCES = 12;
 const CORE_FAMILIES = [
   {
     codes: ['25600', '25605', '25606', '25607', '25608', '25609'],
@@ -145,15 +149,12 @@ const readFixtures = (
   return { candidateIdentities, dictations };
 };
 
-await test('internal catalog covers every fixture candidate and dictation', async () => {
-  const [catalogSource, fixtureSource] = await Promise.all([
-    readFile('data/billing-codes.json', 'utf8'),
-    readFile('data/hand-surgery-dictations.json', 'utf8'),
+await test('internal catalog covers every fixture candidate and dictation', () => {
+  const catalog = parseCatalog(catalogData);
+  const { candidateIdentities, dictations } = readFixtures([
+    ...syntheticCasesData,
+    ...sourceCasesData,
   ]);
-  const catalog = parseCatalog(JSON.parse(catalogSource) as unknown);
-  const { candidateIdentities, dictations } = readFixtures(
-    JSON.parse(fixtureSource) as unknown,
-  );
   assert.equal(dictations.length, EXPECTED_FIXTURES);
   assert.equal(catalog.length, EXPECTED_CATALOG_CODES);
   assert.equal(candidateIdentities.size, EXPECTED_CORPUS_CODES);
@@ -172,10 +173,8 @@ await test('internal catalog covers every fixture candidate and dictation', asyn
   }
 });
 
-await test('internal catalog covers core hand-surgery code families', async () => {
-  const catalog = parseCatalog(
-    JSON.parse(await readFile('data/billing-codes.json', 'utf8')) as unknown,
-  );
+await test('internal catalog covers core hand-surgery code families', () => {
+  const catalog = parseCatalog(catalogData);
   const bySystem = Map.groupBy(catalog, ({ system }) => system);
   const identities = new Set(
     catalog.map(({ code, system }) => candidateIdentity(system, code)),
@@ -185,5 +184,31 @@ await test('internal catalog covers core hand-surgery code families', async () =
   assert.equal(bySystem.get('ICD-10-CM')?.length, EXPECTED_ICD10_CODES);
   for (const family of CORE_FAMILIES) {
     assertFamilyCoverage(identities, family);
+  }
+});
+
+await test('source-grounded variants reference attributed CC BY sources', () => {
+  assert.equal(sourcesData.length, EXPECTED_SOURCES);
+  const sourceIds = new Set(sourcesData.map(({ id }) => id));
+  const variants = Map.groupBy(
+    sourceCasesData,
+    ({ provenance }) => provenance.source_id,
+  );
+  assert.deepEqual(new Set(variants.keys()), sourceIds);
+  for (const [sourceId, cases] of variants) {
+    assert.deepEqual(
+      new Set(cases.map(({ provenance }) => provenance.variant)),
+      new Set(['complete', 'ambiguous', 'truncated']),
+      sourceId,
+    );
+  }
+  for (const source of sourcesData) {
+    assert.equal(source.accessed_at, '2026-09-19');
+    assert.equal(source.license, 'CC BY 4.0');
+    assert.equal(
+      source.license_url,
+      'https://creativecommons.org/licenses/by/4.0/',
+    );
+    assert.ok(source.authors.length > 0);
   }
 });

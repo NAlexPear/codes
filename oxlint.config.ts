@@ -18,7 +18,15 @@ export default defineConfig({
     { files: ['*.config.ts'], rules: { 'import/no-default-export': 'off' } },
     {
       files: ['src/cli.ts', 'src/eval.ts'],
-      rules: { 'eslint/no-await-in-loop': 'off', 'node/no-process-env': 'off' },
+      rules: {
+        'eslint/no-await-in-loop': 'off',
+        'import/no-relative-parent-imports': 'off',
+        'node/no-process-env': 'off',
+      },
+    },
+    {
+      files: ['src/extractor.ts'],
+      rules: { 'import/no-relative-parent-imports': 'off' },
     },
     { files: ['src/typesafe.ts'], rules: { 'eslint/no-await-in-loop': 'off' } },
     {

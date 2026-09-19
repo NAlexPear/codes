@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-import { readFile } from 'node:fs/promises';
-
 import type { CaseEvaluation, EvaluationCounts } from './evaluation.ts';
 
+import catalogData from '../data/billing-codes.json' with { type: 'json' };
+import syntheticCasesData from '../data/hand-surgery-dictations.json' with { type: 'json' };
+import sourceCasesData from '../data/hand-surgery-source-evals.json' with { type: 'json' };
 import { buildJevRequest, parseCatalog } from './codes.ts';
 import {
   evaluateCase,
@@ -17,11 +18,6 @@ import { askJev } from './typesafe.ts';
 const FAILURE = 1;
 const JSON_INDENT = 2;
 const ZERO = 0;
-const CATALOG_URL = new URL('../data/billing-codes.json', import.meta.url);
-const CORPUS_URL = new URL(
-  '../data/hand-surgery-dictations.json',
-  import.meta.url,
-);
 const THRESHOLDS = { confidence: 0.8, likelihood: 0.5 };
 
 interface EvalOutput {
@@ -35,12 +31,10 @@ interface EvalOutput {
 }
 
 const run = async (): Promise<EvalOutput> => {
-  const [catalogSource, corpusSource] = await Promise.all([
-    readFile(CATALOG_URL, 'utf8'),
-    readFile(CORPUS_URL, 'utf8'),
-  ]);
-  const catalog = parseCatalog(JSON.parse(catalogSource) as unknown);
-  const fixtures = parseEvaluationCases(JSON.parse(corpusSource) as unknown);
+  const catalog = parseCatalog(catalogData);
+  const fixtures = [syntheticCasesData, sourceCasesData].flatMap((source) =>
+    parseEvaluationCases(source),
+  );
   const evaluations: CaseEvaluation[] = [];
   const models = new Set<string>();
   let inputTokens = 0;

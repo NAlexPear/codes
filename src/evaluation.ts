@@ -9,9 +9,13 @@ import { readAllCodeResults } from './codes.ts';
 
 type Disposition = 'automatic' | 'manualReview' | 'omitted';
 
-interface ExpectedCode {
+interface CodeIdentity {
   code: string;
   system: string;
+}
+
+interface ExpectedCode extends CodeIdentity {
+  acceptedDispositions: readonly Disposition[];
 }
 
 interface EvaluationCase {
@@ -21,6 +25,7 @@ interface EvaluationCase {
 }
 
 type EvaluatedCode = CodeResult & {
+  accepted: boolean;
   disposition: Disposition;
   expected: boolean;
 };
@@ -59,8 +64,32 @@ const requiredString = (value: unknown, field: string): string => {
   return value;
 };
 
-const identity = ({ code, system }: ExpectedCode): string =>
+const identity = ({ code, system }: CodeIdentity): string =>
   `${system.toLowerCase()}\u0000${code.toLowerCase()}`;
+
+const isExpectedDisposition = (value: unknown): value is Disposition =>
+  value === 'automatic' || value === 'manualReview';
+
+const readAcceptedDispositions = (
+  value: unknown,
+  field: string,
+): readonly Disposition[] => {
+  if (value === undefined) {
+    return ['automatic', 'manualReview'];
+  }
+  if (!Array.isArray(value) || value.length === ZERO) {
+    throw new TypeError(`${field} must be a non-empty array.`);
+  }
+  const dispositions: Disposition[] = [];
+  const values: unknown[] = value;
+  for (const disposition of values) {
+    if (!isExpectedDisposition(disposition)) {
+      throw new TypeError(`${field} contains an invalid disposition.`);
+    }
+    dispositions.push(disposition);
+  }
+  return [...new Set(dispositions)];
+};
 
 const readCandidates = (billing: Record<string, unknown>): ExpectedCode[] => {
   const systems = [
@@ -78,7 +107,14 @@ const readCandidates = (billing: Record<string, unknown>): ExpectedCode[] => {
           `Evaluation fixture ${key} entry must be an object.`,
         );
       }
-      return { code: requiredString(candidate['code'], 'code'), system };
+      return {
+        acceptedDispositions: readAcceptedDispositions(
+          candidate['accepted_dispositions'],
+          `Evaluation fixture ${key} accepted_dispositions`,
+        ),
+        code: requiredString(candidate['code'], 'code'),
+        system,
+      };
     });
   });
 };
@@ -120,13 +156,21 @@ const evaluateCase = ({
   response,
   thresholds,
 }: EvaluateCaseOptions): CaseEvaluation => {
-  const expected = new Set(fixture.expectedCodes.map(identity));
+  const expected = new Map(
+    fixture.expectedCodes.map((code) => [identity(code), code]),
+  );
   const codes = readAllCodeResults(response, catalog, thresholds).map(
-    (result) =>
-      Object.assign(result, {
-        disposition: dispositionFor(result, thresholds),
-        expected: expected.has(identity(result)),
-      }),
+    (result) => {
+      const disposition = dispositionFor(result, thresholds);
+      const expectedCode = expected.get(identity(result));
+      return Object.assign(result, {
+        accepted:
+          expectedCode?.acceptedDispositions.includes(disposition) ??
+          disposition !== 'automatic',
+        disposition,
+        expected: expectedCode !== undefined,
+      });
+    },
   );
   return { codes, id: fixture.id };
 };
@@ -160,12 +204,7 @@ const summarizeEvaluations = (
   return counts;
 };
 
-const isFailure = ({ disposition, expected }: EvaluatedCode): boolean => {
-  if (expected) {
-    return disposition === 'omitted';
-  }
-  return disposition === 'automatic';
-};
+const isFailure = ({ accepted }: EvaluatedCode): boolean => !accepted;
 
 const hasFailures = ({ codes }: CaseEvaluation): boolean =>
   codes.some((code) => isFailure(code));

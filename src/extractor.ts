@@ -1,5 +1,3 @@
-import { readFile } from 'node:fs/promises';
-
 import type {
   BillingCode,
   CodeResult,
@@ -7,10 +5,9 @@ import type {
   ResultThresholds,
 } from './codes.ts';
 
+import catalogData from '../data/billing-codes.json' with { type: 'json' };
 import { buildJevRequest, parseCatalog, readCodeResults } from './codes.ts';
 import { askJev } from './typesafe.ts';
-
-const CATALOG_URL = new URL('../data/billing-codes.json', import.meta.url);
 
 interface ExtractionResult {
   manualReview: CodeResult[];
@@ -29,12 +26,8 @@ interface ExtractorOptions {
 
 type Extract = (dictation: string) => Promise<ExtractionResult>;
 
-const readCatalog = async (): Promise<BillingCode[]> => {
-  const source = await readFile(CATALOG_URL, 'utf8');
-  return parseCatalog(JSON.parse(source) as unknown);
-};
-
-const loadCatalog = readCatalog;
+const loadCatalog = (): Promise<BillingCode[]> =>
+  Promise.resolve(parseCatalog(catalogData));
 
 const createExtractor =
   (options: ExtractorOptions): Extract =>

@@ -50,9 +50,12 @@ results are suppressed when a newer transcript revision arrives.
 ## Sample data
 
 [`data/hand-surgery-dictations.json`](data/hand-surgery-dictations.json)
-contains ten synthetic hand-surgery operative dictations with candidate
-ICD-10-CM and CPT codes. See [`data/README.md`](data/README.md) for the schema,
-provenance, and important coding limitations.
+contains ten original synthetic hand-surgery operative dictations.
+[`data/hand-surgery-source-evals.json`](data/hand-surgery-source-evals.json)
+adds 36 source-grounded evaluations: complete, ambiguous, and truncated variants
+derived from 12 attributed CC BY 4.0 publications. See
+[`data/README.md`](data/README.md) for the schema, provenance, and important
+coding limitations.
 
 ## Status
 
@@ -79,10 +82,12 @@ unit suite:
 TYPESAFE_API_KEY=... pnpm eval
 ```
 
-The eval exits unsuccessfully when an expected code is omitted or an unexpected
-code is returned. Its JSON output separates automatic matches, manual-review
-matches, and omitted candidates. It retains each candidate's full probability
-distribution so model or prompt changes can be compared.
+The eval exits unsuccessfully when a candidate falls outside its accepted
+dispositions. Source-grounded cases can require either an automatic result or a
+manual-review result; candidates without explicit labels must never become
+automatic matches. The JSON output separates automatic matches, manual-review
+matches, and omitted candidates and retains each candidate's full probability
+distribution.
 
 ## License
 

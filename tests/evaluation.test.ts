@@ -1,10 +1,12 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 import type { BillingCode, JevResponse } from '../src/codes.ts';
 import type { EvaluationCase } from '../src/evaluation.ts';
 
+import catalogData from '../data/billing-codes.json' with { type: 'json' };
+import syntheticCasesData from '../data/hand-surgery-dictations.json' with { type: 'json' };
+import sourceCasesData from '../data/hand-surgery-source-evals.json' with { type: 'json' };
 import { parseCatalog } from '../src/codes.ts';
 import {
   evaluateCase,
@@ -32,21 +34,37 @@ const answer = (
   };
 };
 
+const reviewAnswer = (): JevResponse['answers'][string] => ({
+  choice: 'needs_review',
+  confidence: 0.9,
+  probabilities: { needs_review: 0.8, not_supported: 0.1, supported: 0.1 },
+  type: 'choice',
+});
+
 const responseFor = (
   fixture: EvaluationCase,
   catalog: readonly BillingCode[],
 ): JevResponse => {
-  const expected = new Set(
-    fixture.expectedCodes.map(
-      ({ code, system }) =>
-        `${system.toLowerCase()}\u0000${code.toLowerCase()}`,
-    ),
+  const expected = new Map(
+    fixture.expectedCodes.map((candidate) => [
+      `${candidate.system.toLowerCase()}\u0000${candidate.code.toLowerCase()}`,
+      candidate,
+    ]),
   );
   const answers = Object.fromEntries(
     catalog.map(({ code, system }, index) => {
-      let supported = 0.1;
-      if (expected.has(`${system.toLowerCase()}\u0000${code.toLowerCase()}`)) {
-        supported = 0.9;
+      const candidate = expected.get(
+        `${system.toLowerCase()}\u0000${code.toLowerCase()}`,
+      );
+      if (
+        candidate !== undefined &&
+        !candidate.acceptedDispositions.includes('automatic')
+      ) {
+        return [`candidate_${index}`, reviewAnswer()];
+      }
+      let supported = 0.9;
+      if (candidate === undefined) {
+        supported = 0.1;
       }
       return [`candidate_${index}`, answer(supported)];
     }),
@@ -58,14 +76,11 @@ const responseFor = (
   };
 };
 
-await test('corpus labels map every expected code to the internal catalog', async () => {
-  const [catalogSource, corpusSource] = await Promise.all([
-    readFile('data/billing-codes.json', 'utf8'),
-    readFile('data/hand-surgery-dictations.json', 'utf8'),
-  ]);
-  const catalog = parseCatalog(JSON.parse(catalogSource) as unknown);
-  const fixtures = parseEvaluationCases(JSON.parse(corpusSource) as unknown);
-  const evaluations = fixtures.map((fixture) =>
+const evaluateFixtures = (
+  fixtures: readonly EvaluationCase[],
+  catalog: readonly BillingCode[],
+): ReturnType<typeof evaluateCase>[] =>
+  fixtures.map((fixture) =>
     evaluateCase({
       catalog,
       fixture,
@@ -74,34 +89,68 @@ await test('corpus labels map every expected code to the internal catalog', asyn
     }),
   );
 
+const ASYMMETRIC_CATALOG = parseCatalog([
+  {
+    code: 'EXPECTED-MISS',
+    description: 'Expected but omitted',
+    system: 'TEST',
+  },
+  { code: 'UNEXPECTED', description: 'Unexpected match', system: 'TEST' },
+  { code: 'EXPECTED-REVIEW', description: 'Expected review', system: 'TEST' },
+]);
+const ASYMMETRIC_FIXTURE: EvaluationCase = {
+  dictation: 'An asymmetric evaluation fixture.',
+  expectedCodes: [
+    {
+      acceptedDispositions: ['automatic', 'manualReview'],
+      code: 'EXPECTED-MISS',
+      system: 'TEST',
+    },
+    {
+      acceptedDispositions: ['automatic', 'manualReview'],
+      code: 'EXPECTED-REVIEW',
+      system: 'TEST',
+    },
+  ],
+  id: 'asymmetric',
+};
+
+await test('corpus labels map every expected code to the internal catalog', () => {
+  const catalog = parseCatalog(catalogData);
+  const fixtures = parseEvaluationCases(syntheticCasesData);
+  const evaluations = evaluateFixtures(fixtures, catalog);
+
   assert.deepEqual(summarizeEvaluations(evaluations), {
     automaticExpected: 38,
     automaticUnexpected: 0,
     manualReviewExpected: 0,
     manualReviewUnexpected: 0,
     omittedExpected: 0,
-    omittedUnexpected: 862,
+    omittedUnexpected: 872,
   });
 });
 
+await test('source-grounded labels encode satisfiable automatic and review outcomes', () => {
+  const catalog = parseCatalog(catalogData);
+  const fixtures = parseEvaluationCases(sourceCasesData);
+  const evaluations = evaluateFixtures(fixtures, catalog);
+
+  assert.equal(evaluations.length, 36);
+  assert.equal(
+    evaluations.some((evaluation) => hasFailures(evaluation)),
+    false,
+  );
+  assert.ok(
+    evaluations.some(({ codes }) =>
+      codes.some(
+        ({ disposition, expected }) =>
+          expected && disposition === 'manualReview',
+      ),
+    ),
+  );
+});
+
 await test('evaluation distinguishes misses, false positives, and manual review', () => {
-  const catalog = parseCatalog([
-    {
-      code: 'EXPECTED-MISS',
-      description: 'Expected but omitted',
-      system: 'TEST',
-    },
-    { code: 'UNEXPECTED', description: 'Unexpected match', system: 'TEST' },
-    { code: 'EXPECTED-REVIEW', description: 'Expected review', system: 'TEST' },
-  ]);
-  const fixture: EvaluationCase = {
-    dictation: 'An asymmetric evaluation fixture.',
-    expectedCodes: [
-      { code: 'EXPECTED-MISS', system: 'TEST' },
-      { code: 'EXPECTED-REVIEW', system: 'TEST' },
-    ],
-    id: 'asymmetric',
-  };
   const response: JevResponse = {
     answers: {
       candidate_0: answer(0.49),
@@ -113,8 +162,8 @@ await test('evaluation distinguishes misses, false positives, and manual review'
   };
 
   const evaluation = evaluateCase({
-    catalog,
-    fixture,
+    catalog: ASYMMETRIC_CATALOG,
+    fixture: ASYMMETRIC_FIXTURE,
     response,
     thresholds: THRESHOLDS,
   });
@@ -167,4 +216,44 @@ await test('manual review counts as a passing disposition', () => {
   });
   assert.equal(hasFailures(evaluation), false);
   assert.deepEqual(onlyFailures(evaluation).codes, []);
+});
+
+await test('explicit review labels reject automatic and omitted outcomes', () => {
+  const catalog = parseCatalog([
+    { code: 'REVIEW', description: 'Ambiguous candidate', system: 'CPT' },
+  ]);
+  const [fixture] = parseEvaluationCases([
+    {
+      billing_candidates: {
+        cpt: [{ accepted_dispositions: ['manualReview'], code: 'REVIEW' }],
+        icd10cm: [],
+      },
+      dictation: { description: 'The approach is not documented.' },
+      id: 'required-review',
+    },
+  ]);
+  assert.ok(fixture);
+  const automatic = evaluateCase({
+    catalog,
+    fixture,
+    response: {
+      answers: { candidate_0: answer(0.9) },
+      model: 'mock-jev',
+      usage: { input_tokens: 0, output_tokens: 0 },
+    },
+    thresholds: THRESHOLDS,
+  });
+  const omitted = evaluateCase({
+    catalog,
+    fixture,
+    response: {
+      answers: { candidate_0: answer(0.1) },
+      model: 'mock-jev',
+      usage: { input_tokens: 0, output_tokens: 0 },
+    },
+    thresholds: THRESHOLDS,
+  });
+
+  assert.equal(hasFailures(automatic), true);
+  assert.equal(hasFailures(omitted), true);
 });

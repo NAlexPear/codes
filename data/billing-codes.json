@@ -162,6 +162,11 @@
   },
   {
     "system": "CPT",
+    "code": "26357",
+    "description": "Secondary zone 2 digital flexor tendon repair without a free graft, each tendon"
+  },
+  {
+    "system": "CPT",
     "code": "26410",
     "description": "Primary or secondary extensor tendon repair in the hand without a free graft"
   },

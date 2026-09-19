@@ -1,0 +1,1138 @@
+[
+  {
+    "id": "source-001-complete",
+    "title": "Right revision open carpal tunnel release",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": { "source_id": "pmc-8911490", "variant": "complete" },
+    "dictation": {
+      "preoperative_diagnoses": ["Recurrent right carpal tunnel syndrome"],
+      "procedures": [
+        "Revision right open carpal tunnel release with external neurolysis"
+      ],
+      "description": "A palmar incision was extended proximal to the old scar. The median nerve was identified in normal tissue, followed distally, and protected. Residual transverse carpal ligament and scar were released under direct vision. External neurolysis restored free excursion of the intact nerve. The wound was closed without complication."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "G56.01",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "Recurrent right median neuropathy at the carpal tunnel is explicit."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "64721",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The revision decompression was performed through an open exposure."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-001-ambiguous",
+    "title": "Right revision carpal tunnel decompression with missing approach",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-8911490",
+      "variant": "ambiguous",
+      "omissions": ["operative approach"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Recurrent right carpal tunnel syndrome"],
+      "procedures": ["Revision right carpal tunnel decompression"],
+      "description": "The median nerve was decompressed at the wrist and was intact at completion. The dictation does not identify whether visualization was open or endoscopic."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "G56.01",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The diagnosis and side are complete."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "64721",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "Open decompression is plausible but the approach is absent."
+        },
+        {
+          "code": "29848",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "Endoscopic release is plausible but the approach is absent."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-001-truncated",
+    "title": "Planned revision carpal tunnel release without a performed service",
+    "encounter_type": "truncated_operating_room_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-8911490",
+      "variant": "truncated",
+      "omissions": ["performed procedure"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Recurrent right carpal tunnel syndrome"],
+      "planned_procedure": "Revision right carpal tunnel release",
+      "description": "Consent was confirmed and the arm was prepared. The record ends before incision and does not establish that surgery occurred."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "G56.01",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The current diagnosis is established despite the incomplete procedure record."
+        }
+      ],
+      "cpt": []
+    }
+  },
+  {
+    "id": "source-002-complete",
+    "title": "Left mini-open carpal tunnel release",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": { "source_id": "pmc-10440051", "variant": "complete" },
+    "dictation": {
+      "preoperative_diagnoses": ["Left carpal tunnel syndrome"],
+      "procedures": ["Left mini-open carpal tunnel release"],
+      "description": "Through a short palmar incision, the transverse carpal ligament was exposed and divided completely under direct vision. The distal forearm fascia was released, the median nerve was inspected, and the wound was closed."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "G56.02",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "Left carpal tunnel syndrome is explicit."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "64721",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "A direct-vision open decompression was completed."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-002-ambiguous",
+    "title": "Open carpal tunnel release with contradictory laterality",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-10440051",
+      "variant": "ambiguous",
+      "contradictions": ["laterality"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Left carpal tunnel syndrome"],
+      "procedures": ["Right open carpal tunnel release"],
+      "description": "The heading identifies the right wrist, but the operative body repeatedly refers to release of the left transverse carpal ligament. The open release was otherwise complete."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "G56.01",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The procedure heading supports the right side but conflicts with the body."
+        },
+        {
+          "code": "G56.02",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The diagnosis and body support the left side but conflict with the heading."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "64721",
+          "accepted_dispositions": ["automatic", "manualReview"],
+          "rationale": "The open procedure type is clear, but the side conflict requires modifier review."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-002-truncated",
+    "title": "Left carpal tunnel release stopped before incision",
+    "encounter_type": "truncated_operating_room_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-10440051",
+      "variant": "truncated",
+      "omissions": ["performed procedure"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Left carpal tunnel syndrome"],
+      "planned_procedure": "Left mini-open carpal tunnel release",
+      "description": "The patient was positioned, but the case was stopped before incision. No ligament release was performed."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "G56.02",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The diagnosis remains documented."
+        }
+      ],
+      "cpt": []
+    }
+  },
+  {
+    "id": "source-003-complete",
+    "title": "Percutaneous right index trigger release",
+    "encounter_type": "procedure_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": { "source_id": "pmc-12042385", "variant": "complete" },
+    "dictation": {
+      "preoperative_diagnoses": ["Right index trigger finger"],
+      "procedures": ["Percutaneous right index A1 pulley release"],
+      "description": "A percutaneous cutting instrument was placed at the right index A1 pulley. The pulley was divided while the flexor tendons were protected. Active motion confirmed resolution of catching."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M65.321",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The side and index digit are explicit."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26055",
+          "accepted_dispositions": ["automatic", "manualReview"],
+          "rationale": "The A1 pulley was released, with payer review potentially needed for the percutaneous approach."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-003-ambiguous",
+    "title": "Right trigger release with missing digit",
+    "encounter_type": "procedure_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-12042385",
+      "variant": "ambiguous",
+      "omissions": ["digit"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Right trigger digit"],
+      "procedures": ["Percutaneous A1 pulley release"],
+      "description": "A stenotic A1 pulley in the right hand was divided percutaneously and catching resolved. The finger is not identified."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M65.321",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The index finger is possible but undocumented."
+        },
+        {
+          "code": "M65.331",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The middle finger is possible but undocumented."
+        },
+        {
+          "code": "M65.341",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The ring finger is possible but undocumented."
+        },
+        {
+          "code": "M65.351",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The little finger is possible but undocumented."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26055",
+          "accepted_dispositions": ["automatic", "manualReview"],
+          "rationale": "A trigger-digit pulley release was performed despite missing digit specificity."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-003-truncated",
+    "title": "Right index trigger release planned but not documented",
+    "encounter_type": "truncated_procedure_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-12042385",
+      "variant": "truncated",
+      "omissions": ["performed procedure"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Right index trigger finger"],
+      "planned_procedure": "Percutaneous right index trigger release",
+      "description": "The release was discussed and the skin was marked. The note ends before treatment and contains no performed-service statement."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M65.321",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The diagnosis is established."
+        }
+      ],
+      "cpt": []
+    }
+  },
+  {
+    "id": "source-004-complete",
+    "title": "Open left ring trigger release",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": { "source_id": "pmc-11922895", "variant": "complete" },
+    "dictation": {
+      "preoperative_diagnoses": ["Left ring trigger finger"],
+      "procedures": ["Open left ring-finger A1 pulley release"],
+      "description": "A transverse incision exposed the left ring A1 pulley. The pulley was divided longitudinally under direct vision. Active flexion and extension showed no residual grating or triggering."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M65.342",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "Left ring trigger finger is explicit."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26055",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "Open A1 pulley release was performed."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-004-ambiguous",
+    "title": "Trigger release with conflicting left middle and ring digit",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-11922895",
+      "variant": "ambiguous",
+      "contradictions": ["digit"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Left ring trigger finger"],
+      "procedures": ["Open left middle trigger release"],
+      "description": "The procedure list identifies the middle finger, while the operative body identifies and releases the ring-finger A1 pulley. Triggering resolved after open release."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M65.332",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The procedure list supports the middle finger."
+        },
+        {
+          "code": "M65.342",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The diagnosis and body support the ring finger."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26055",
+          "accepted_dispositions": ["automatic", "manualReview"],
+          "rationale": "The procedure type is clear, but conflicting digits require modifier review."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-004-truncated",
+    "title": "Open left ring trigger release aborted",
+    "encounter_type": "truncated_operating_room_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-11922895",
+      "variant": "truncated",
+      "omissions": ["performed procedure"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Left ring trigger finger"],
+      "planned_procedure": "Open left ring trigger release",
+      "description": "The operation was canceled before incision. No A1 pulley release occurred."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M65.342",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The diagnosis remains current."
+        }
+      ],
+      "cpt": []
+    }
+  },
+  {
+    "id": "source-005-complete",
+    "title": "Open left trigger-thumb release",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": { "source_id": "pmc-10671987", "variant": "complete" },
+    "dictation": {
+      "preoperative_diagnoses": ["Left trigger thumb"],
+      "procedures": ["Open left thumb A1 pulley release"],
+      "description": "Under local anesthesia, an incision was made at the left thumb A1 pulley. Blunt dissection protected the digital nerves. The pulley was divided longitudinally and smooth tendon excursion was confirmed."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M65.312",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The diagnosis specifies the left thumb."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26055",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The A1 pulley was openly released."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-005-ambiguous",
+    "title": "Trigger-thumb release with missing side",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-10671987",
+      "variant": "ambiguous",
+      "omissions": ["laterality"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Trigger thumb"],
+      "procedures": ["Open thumb A1 pulley release"],
+      "description": "The thumb A1 pulley was exposed and divided under direct vision. The report does not state right or left."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M65.311",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "Right trigger thumb is possible but not documented."
+        },
+        {
+          "code": "M65.312",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "Left trigger thumb is possible but not documented."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26055",
+          "accepted_dispositions": ["automatic", "manualReview"],
+          "rationale": "The procedure code is stable, but missing laterality requires modifier review."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-005-truncated",
+    "title": "Left trigger-thumb procedure note ending before release",
+    "encounter_type": "truncated_operating_room_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-10671987",
+      "variant": "truncated",
+      "omissions": ["performed procedure"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Left trigger thumb"],
+      "planned_procedure": "Open left trigger-thumb release",
+      "description": "Local anesthetic was administered, but the available note ends before incision or pulley division."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M65.312",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The left trigger-thumb diagnosis is complete."
+        }
+      ],
+      "cpt": []
+    }
+  },
+  {
+    "id": "source-006-complete",
+    "title": "Open right middle trigger release",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": { "source_id": "pmc-11548985", "variant": "complete" },
+    "dictation": {
+      "preoperative_diagnoses": ["Right middle trigger finger"],
+      "procedures": ["Open right middle A1 pulley release"],
+      "description": "After failed conservative care, the right middle A1 pulley was exposed through a palmar incision and divided. The flexor tendons glided freely without residual locking."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M65.331",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "Right middle trigger finger is explicit."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26055",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "A completed tendon-sheath release is documented."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-006-ambiguous",
+    "title": "Right trigger release with unspecified finger",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-11548985",
+      "variant": "ambiguous",
+      "omissions": ["digit"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Right trigger finger"],
+      "procedures": ["Open right A1 pulley release"],
+      "description": "An A1 pulley in the right hand was divided and tendon gliding normalized. The report does not identify the involved finger."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M65.321",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The index finger remains possible."
+        },
+        {
+          "code": "M65.331",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The middle finger remains possible."
+        },
+        {
+          "code": "M65.341",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The ring finger remains possible."
+        },
+        {
+          "code": "M65.351",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The little finger remains possible."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26055",
+          "accepted_dispositions": ["automatic", "manualReview"],
+          "rationale": "The trigger release is documented, but missing digit specificity requires modifier review."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-006-truncated",
+    "title": "Right middle trigger release discussed only",
+    "encounter_type": "truncated_clinic_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-11548985",
+      "variant": "truncated",
+      "omissions": ["performed procedure"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Right middle trigger finger"],
+      "planned_procedure": "Open right middle trigger release",
+      "description": "Risks and benefits were discussed. No procedure was performed in the available encounter."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M65.331",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The current diagnosis is documented."
+        }
+      ],
+      "cpt": []
+    }
+  },
+  {
+    "id": "source-007-complete",
+    "title": "Acute right index zone 2 flexor tendon repair",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": { "source_id": "pmc-10957262", "variant": "complete" },
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Right index flexor digitorum profundus laceration in zone 2"
+      ],
+      "procedures": ["Primary right index zone 2 flexor tendon repair"],
+      "description": "The acute laceration was explored. Both tendon ends and digital nerves were identified. The profundus tendon was repaired in zone 2 with a core suture and epitendinous running suture. Active motion confirmed smooth passage beneath intact pulleys."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "S66.120A",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "Active treatment of a right index flexor-tendon laceration is explicit."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26356",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "Primary repair in zone 2 is explicit."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-007-ambiguous",
+    "title": "Right index flexor repair with missing tendon zone",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-10957262",
+      "variant": "ambiguous",
+      "omissions": ["flexor-tendon zone"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Right index flexor-tendon laceration"],
+      "procedures": ["Primary right index flexor-tendon repair"],
+      "description": "The divided profundus tendon was repaired with core and epitendinous sutures. The report does not locate the repair relative to zone 2 or the digital sheath."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "S66.120A",
+          "accepted_dispositions": ["automatic", "manualReview"],
+          "rationale": "The right index injury and active treatment are documented, although exact level is incomplete."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26350",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "Repair outside zone 2 is possible."
+        },
+        {
+          "code": "26356",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "Zone 2 repair is possible."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-007-truncated",
+    "title": "Right index flexor repair note ending after exploration",
+    "encounter_type": "truncated_operating_room_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-10957262",
+      "variant": "truncated",
+      "omissions": ["tendon repair"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Right index zone 2 flexor-tendon laceration"],
+      "planned_procedure": "Primary flexor-tendon repair",
+      "description": "The wound was explored and the divided tendon ends were identified. The available record ends before any repair is described."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "S66.120A",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The injury is established during active treatment."
+        }
+      ],
+      "cpt": []
+    }
+  },
+  {
+    "id": "source-008-complete",
+    "title": "Delayed left middle zone 2 flexor tendon repair",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": { "source_id": "pmc-12387015", "variant": "complete" },
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Chronic left middle profundus tendon laceration in zone 2"
+      ],
+      "procedures": ["Delayed direct left middle zone 2 flexor tendon repair"],
+      "description": "The tendon ends were mobilized while preserving the A2 and A4 pulleys. The gap permitted direct approximation. A multistrand core repair and epitendinous suture were completed in zone 2 and protected in a dorsal blocking splint."
+    },
+    "billing_candidates": {
+      "icd10cm": [],
+      "cpt": [
+        {
+          "code": "26357",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "A delayed zone 2 repair without a free graft is explicit."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-008-ambiguous",
+    "title": "Delayed flexor repair with missing zone and graft status",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-12387015",
+      "variant": "ambiguous",
+      "omissions": ["flexor-tendon zone", "free-graft status"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Chronic left middle flexor-tendon laceration"
+      ],
+      "procedures": ["Secondary flexor-tendon reconstruction"],
+      "description": "The flexor tendon was reconstructed and tendon continuity restored. The report omits the tendon zone and does not establish whether a free graft was used."
+    },
+    "billing_candidates": {
+      "icd10cm": [],
+      "cpt": [
+        {
+          "code": "26350",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "Repair outside zone 2 without graft remains possible."
+        },
+        {
+          "code": "26357",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "A secondary zone 2 repair without graft remains clinically plausible, but the details are unresolved."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-008-truncated",
+    "title": "Delayed flexor reconstruction planned only",
+    "encounter_type": "truncated_operating_room_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-12387015",
+      "variant": "truncated",
+      "omissions": ["performed procedure"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Chronic left middle flexor-tendon laceration"
+      ],
+      "planned_procedure": "Delayed direct repair versus tendon graft",
+      "description": "The treatment alternatives were documented, but the record contains no operation or completed reconstruction."
+    },
+    "billing_candidates": { "icd10cm": [], "cpt": [] }
+  },
+  {
+    "id": "source-009-complete",
+    "title": "Left palmar fasciectomy with one-digit release",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": { "source_id": "pmc-11693408", "variant": "complete" },
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Left palmar Dupuytren contracture involving the ring finger"
+      ],
+      "procedures": [
+        "Partial palmar fasciectomy with left ring-finger release through the PIP joint"
+      ],
+      "description": "Diseased pretendinous and digital cords were dissected from the neurovascular bundles and excised. The ring-finger PIP contracture was released and full passive extension was obtained. No additional digit was treated."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M72.0",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "Palmar fascial fibromatosis is established."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26123",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "One digit was released through the PIP joint."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-009-ambiguous",
+    "title": "Palmar fasciectomy with undocumented number of released digits",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-11693408",
+      "variant": "ambiguous",
+      "omissions": ["number of digits"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Palmar Dupuytren contracture"],
+      "procedures": ["Partial palmar fasciectomy with digital releases"],
+      "description": "Diseased palmar and digital cords were excised and PIP extension improved. The report uses plural digital releases but does not identify or count the treated digits."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M72.0",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "Dupuytren disease is explicit."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26123",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "At least one digital release appears likely, but the base digit is not identified."
+        },
+        {
+          "code": "26125",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "An additional-digit service is plausible but the count is absent."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-009-truncated",
+    "title": "Dupuytren fasciectomy planned but not performed",
+    "encounter_type": "truncated_clinic_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-11693408",
+      "variant": "truncated",
+      "omissions": ["performed procedure"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Palmar Dupuytren contracture"],
+      "planned_procedure": "Limited palmar fasciectomy",
+      "description": "Operative and nonsurgical options were reviewed. This encounter contains no performed fasciectomy."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M72.0",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The condition is documented."
+        }
+      ],
+      "cpt": []
+    }
+  },
+  {
+    "id": "source-010-complete",
+    "title": "Left wrist arthroscopy with central TFCC debridement",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": { "source_id": "pmc-9121853", "variant": "complete" },
+    "dictation": {
+      "preoperative_diagnoses": ["Left central TFCC tear"],
+      "procedures": ["Left wrist arthroscopy with TFCC debridement"],
+      "description": "Radiocarpal arthroscopy showed intact intercarpal ligaments and an unstable central TFCC flap. The flap was excised to a stable rim with a shaver and punch. The peripheral attachment remained stable."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "S63.592A",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The left TFCC tear is established, but traumatic versus degenerative etiology is not."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "29846",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "Arthroscopic TFCC debridement was completed."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-010-ambiguous",
+    "title": "Left wrist arthroscopy ending after discovery of a TFCC flap",
+    "encounter_type": "incomplete_operating_room_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-9121853",
+      "variant": "ambiguous",
+      "omissions": ["treatment after diagnostic arthroscopy"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Left TFCC tear"],
+      "procedures": ["Left wrist arthroscopy"],
+      "description": "Diagnostic radiocarpal arthroscopy was completed and showed a central TFCC flap. The report ends before stating whether the flap was debrided or left untreated."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "S63.592A",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "Etiology remains unresolved."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "29840",
+          "accepted_dispositions": ["automatic", "manualReview"],
+          "rationale": "Diagnostic arthroscopy definitely occurred, but separate reporting depends on whether surgery followed."
+        },
+        {
+          "code": "29846",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "Debridement is plausible but not documented as completed."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-010-truncated",
+    "title": "Left TFCC tear with wrist arthroscopy planned only",
+    "encounter_type": "truncated_preoperative_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-9121853",
+      "variant": "truncated",
+      "omissions": ["performed procedure"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": ["Left TFCC tear"],
+      "planned_procedure": "Diagnostic wrist arthroscopy with possible TFCC debridement",
+      "description": "The note records the surgical plan but no arthroscopy or debridement."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "S63.592A",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "The tear is current but its etiology is not established."
+        }
+      ],
+      "cpt": []
+    }
+  },
+  {
+    "id": "source-011-complete",
+    "title": "Right intra-articular distal radius fixation with three fragments",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": { "source_id": "pmc-6965085", "variant": "complete" },
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Closed right intra-articular distal radius fracture with three articular fragments"
+      ],
+      "procedures": [
+        "Open reduction and internal fixation of right intra-articular distal radius fracture"
+      ],
+      "description": "A volar approach exposed the fracture. Three separate articular fragments were reduced and stabilized with a volar plate and screws. Fluoroscopy confirmed restoration of the joint surface and stable fixation."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "S52.571A",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "A closed right intra-articular distal radius fracture under active treatment is explicit."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "25609",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "Open fixation of three articular fragments is explicit."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-011-ambiguous",
+    "title": "Right intra-articular distal radius fixation with missing fragment count",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-6965085",
+      "variant": "ambiguous",
+      "omissions": ["number of articular fragments"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Closed right intra-articular distal radius fracture"
+      ],
+      "procedures": ["Open reduction and volar plate fixation"],
+      "description": "The articular surface was reduced through a volar approach and fixed with a plate and screws. The number of separately fixed articular fragments is not documented."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "S52.571A",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The right intra-articular fracture and active treatment are established."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "25608",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "Two-fragment fixation is possible but the count is absent."
+        },
+        {
+          "code": "25609",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "Fixation of three or more fragments is possible but the count is absent."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-011-truncated",
+    "title": "Right distal radius fixation note ending before reduction",
+    "encounter_type": "truncated_operating_room_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-6965085",
+      "variant": "truncated",
+      "omissions": ["fracture treatment"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Closed right intra-articular distal radius fracture"
+      ],
+      "planned_procedure": "Open reduction and internal fixation",
+      "description": "The arm was prepared and a volar incision was marked. The record ends before exposure, reduction, or fixation."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "S52.571A",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "The fracture is established during active treatment."
+        }
+      ],
+      "cpt": []
+    }
+  },
+  {
+    "id": "source-012-complete",
+    "title": "Right extra-articular distal radius volar plate fixation",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": { "source_id": "pmc-12487993", "variant": "complete" },
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Displaced extra-articular right distal radius fracture"
+      ],
+      "procedures": [
+        "Open reduction and volar plate fixation of right distal radius"
+      ],
+      "description": "A volar approach exposed an extra-articular fracture. The fracture was reduced directly and secured with a volar locking plate. Fluoroscopy confirmed alignment, extra-articular screw position, and stable fixation."
+    },
+    "billing_candidates": {
+      "icd10cm": [],
+      "cpt": [
+        {
+          "code": "25607",
+          "accepted_dispositions": ["automatic"],
+          "rationale": "Open fixation of an extra-articular distal radius fracture is explicit."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-012-ambiguous",
+    "title": "Distal radius fixation with missing open-versus-percutaneous approach",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-12487993",
+      "variant": "ambiguous",
+      "omissions": ["fixation approach"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Displaced extra-articular distal radius fracture"
+      ],
+      "procedures": ["Distal radius reduction and fixation"],
+      "description": "Alignment was restored and fixation placed under fluoroscopy. The report does not state whether the fracture was exposed through an open approach or fixed percutaneously."
+    },
+    "billing_candidates": {
+      "icd10cm": [],
+      "cpt": [
+        {
+          "code": "25606",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "Percutaneous fixation is plausible but not established."
+        },
+        {
+          "code": "25607",
+          "accepted_dispositions": ["manualReview"],
+          "rationale": "Open extra-articular fixation is plausible but not established."
+        }
+      ]
+    }
+  },
+  {
+    "id": "source-012-truncated",
+    "title": "Extra-articular distal radius fixation planned only",
+    "encounter_type": "truncated_preoperative_note",
+    "synthetic": true,
+    "source_grounded": true,
+    "provenance": {
+      "source_id": "pmc-12487993",
+      "variant": "truncated",
+      "omissions": ["performed procedure"]
+    },
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Displaced extra-articular distal radius fracture"
+      ],
+      "planned_procedure": "Open reduction and volar plate fixation",
+      "description": "The treatment plan is documented, but no performed reduction or fixation appears in the available note."
+    },
+    "billing_candidates": { "icd10cm": [], "cpt": [] }
+  }
+]
