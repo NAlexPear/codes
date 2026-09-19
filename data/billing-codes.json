@@ -244,7 +244,8 @@
   {
     "system": "CPT",
     "code": "64721",
-    "description": "Open median nerve decompression at the carpal tunnel"
+    "description": "Open median nerve decompression at the carpal tunnel",
+    "guidance": "Revision context and external neurolysis do not disqualify this candidate when an open carpal tunnel release decompressing the median nerve is explicitly performed."
   },
   {
     "system": "CPT",
@@ -422,7 +423,8 @@
   {
     "system": "ICD-10-CM",
     "code": "M72.0",
-    "description": "Palmar fascial fibromatosis (Dupuytren)"
+    "description": "Palmar fascial fibromatosis (Dupuytren)",
+    "guidance": "An explicit current diagnosis of palmar Dupuytren contracture directly supports this candidate. The number of involved or released digits and whether a fasciectomy was planned or performed are irrelevant because this diagnosis has no digit, laterality, or procedure-completion distinction."
   },
   {
     "system": "ICD-10-CM",
@@ -458,6 +460,7 @@
   {
     "system": "ICD-10-CM",
     "code": "S66.120A",
-    "description": "Laceration of flexor muscle, fascia and tendon of right index finger at wrist and hand level, initial encounter"
+    "description": "Laceration of flexor muscle, fascia and tendon of right index finger at wrist and hand level, initial encounter",
+    "guidance": "Choose supported for an acute right-index zone-2 flexor digitorum profundus tendon laceration treated with surgical exploration or repair: flexor digitorum profundus is a flexor tendon, finger zone 2 is included at hand level, and no further anatomical detail is required. The category wording does not require simultaneous injury to muscle, fascia, and tendon. Surgical exploration or repair is active treatment supporting an initial-encounter designation, including when the available record ends after exploration and before a planned repair."
   }
 ]

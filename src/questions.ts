@@ -69,6 +69,7 @@ const diagnosisQuestion = (candidate: BillingCode): ChoiceQuestion => ({
       reasons: [
         'The diagnosis category is plausible, but required etiology, anatomy, laterality, or encounter-status evidence is missing or ambiguous.',
         'Choosing this candidate over a nearby diagnosis requires chart context not present in the dictation.',
+        'Different parts of the dictation explicitly document conflicting anatomy, laterality, or digit values; candidates matching either documented alternative require review.',
         'A documented TFCC tear with no clear traumatic or degenerative etiology makes a wrist sprain candidate a review case.',
       ],
       what: 'The candidate may apply, but the dictation alone is insufficient for a reliable coding decision.',
@@ -86,6 +87,7 @@ const diagnosisQuestion = (candidate: BillingCode): ChoiceQuestion => ({
         'The current diagnosis, findings, or treatment establish the condition represented by the candidate.',
         'The documented anatomy and laterality match the candidate.',
         'Standard clinical synonyms and equivalent diagnostic terminology count as matches.',
+        'An explicit current diagnosis remains supported when a related procedure is planned, incomplete, or ambiguous, unless a characteristic required by this diagnosis candidate is itself unresolved.',
         'A distal-forearm diagnosis candidate can match wrist tendon-sheath documentation when it describes the same structure, side, and condition.',
         'A documented ligament or fibrocartilage tear can support a sprain-category candidate when its anatomy and laterality match.',
         'For an injury code, surgery or other active treatment supports an initial-encounter designation; it need not be the patient’s first visit.',
@@ -96,12 +98,14 @@ const diagnosisQuestion = (candidate: BillingCode): ChoiceQuestion => ({
   instructions: {
     candidate,
     decision_order: [
-      'First decide whether the documented condition broadly matches the candidate’s diagnosis category, anatomy, and laterality.',
+      'Assess the diagnosis independently from any related procedure: whether a procedure was planned, completed, aborted, or procedurally ambiguous does not determine diagnosis support.',
+      'Decide whether the documented condition broadly matches the candidate’s diagnosis category, anatomy, and laterality.',
+      'When the record explicitly conflicts about a candidate-specific characteristic such as side or digit, choose needs_review for every candidate matching a documented alternative; do not treat either alternative as not_supported.',
       'If it broadly matches but required coding specificity is missing or ambiguous, choose needs_review.',
       'Choose not_supported only when the underlying condition is absent, contradicted, or clinically different.',
     ],
     focus:
-      'Compare clinical meaning rather than exact wording. Use needs_review, not not_supported, when the condition is plausible but required coding specificity is absent or ambiguous.',
+      'Compare clinical meaning rather than exact wording. Procedure approach, extent, or completion uncertainty must not lower an otherwise explicit diagnosis. Use needs_review, not not_supported, when candidate-specific diagnosis evidence is conflicting, absent, or ambiguous.',
     inspect: '`dictation`',
     question:
       'Does `dictation` support assigning this ICD-10-CM diagnosis candidate for the current encounter?',

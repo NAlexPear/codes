@@ -49,6 +49,18 @@ await test('buildJevRequest creates independent structured Choice questions for 
     firstQuestion.criteria.supported.evidence.join(' '),
     /active treatment supports an initial-encounter designation/u,
   );
+  assert.match(
+    firstQuestion.instructions.decision_order.join(' '),
+    /Assess the diagnosis independently/u,
+  );
+  assert.match(
+    firstQuestion.instructions.decision_order.join(' '),
+    /every candidate matching a documented alternative/u,
+  );
+  assert.match(
+    firstQuestion.instructions.focus,
+    /Procedure approach, extent, or completion uncertainty must not lower/u,
+  );
 });
 
 await test('buildJevRequest gives CPT candidates procedure-specific boundaries', () => {
