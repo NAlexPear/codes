@@ -1,0 +1,559 @@
+[
+  {
+    "id": "hand-001",
+    "title": "Right open carpal tunnel and middle trigger finger releases",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Right carpal tunnel syndrome",
+        "Right middle trigger finger"
+      ],
+      "postoperative_diagnoses": [
+        "Right carpal tunnel syndrome",
+        "Right middle trigger finger"
+      ],
+      "procedures": [
+        "Right open carpal tunnel release",
+        "Right middle finger A1 pulley release"
+      ],
+      "indications": "The patient has persistent median-distribution numbness, nocturnal symptoms, and electrodiagnostic evidence of right median neuropathy at the wrist despite splinting and injection. The patient also has painful locking of the right middle finger that has not improved after two tendon-sheath injections.",
+      "findings": "The transverse carpal ligament was thickened and the median nerve was visibly compressed. The middle-finger A1 pulley was stenotic, with mild fraying but no rupture of the flexor tendons.",
+      "description": "After verification of the operative sites, regional anesthesia was administered and the right upper extremity was prepared and draped. The arm was exsanguinated and the tourniquet inflated. A longitudinal palmar incision was made in line with the radial border of the ring finger. The palmar fascia was divided, the transverse carpal ligament was identified, and the ligament was released under direct vision from distal to proximal. The distal antebrachial fascia was released, and the median nerve was inspected and found intact. Through a separate transverse incision over the middle-finger metacarpophalangeal flexion crease, the A1 pulley was exposed while both neurovascular bundles were protected. The pulley was released completely. The flexor tendons were delivered into the wound and the finger was taken through full passive motion without residual catching. Both wounds were irrigated and closed. A sterile soft dressing was applied. Estimated blood loss was minimal, and there were no complications."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "G56.01",
+          "label": "Carpal tunnel syndrome, right upper limb",
+          "rationale": "The report documents right-sided median nerve compression at the carpal tunnel."
+        },
+        {
+          "code": "M65.331",
+          "label": "Trigger finger, right middle finger",
+          "rationale": "The report identifies stenosing tenosynovitis of the right middle finger."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "64721",
+          "label": "Open median nerve decompression at the carpal tunnel",
+          "modifier": "RT",
+          "units": 1,
+          "rationale": "An open carpal tunnel release is fully described."
+        },
+        {
+          "code": "26055",
+          "label": "Trigger digit tendon-sheath release",
+          "modifier": "F7",
+          "units": 1,
+          "rationale": "A separate A1 pulley release of the right middle finger is documented."
+        }
+      ]
+    },
+    "coding_notes": [
+      "Confirm payer preference for an anatomic finger modifier versus RT.",
+      "Check current NCCI edits and multiple-procedure rules."
+    ]
+  },
+  {
+    "id": "hand-002",
+    "title": "Right intra-articular distal radius fixation with acute carpal tunnel release",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Closed displaced intra-articular fracture of the right distal radius with three or more articular fragments",
+        "Acute right carpal tunnel syndrome"
+      ],
+      "postoperative_diagnoses": [
+        "Closed displaced intra-articular fracture of the right distal radius with three or more articular fragments",
+        "Acute right carpal tunnel syndrome"
+      ],
+      "procedures": [
+        "Open reduction and internal fixation of right intra-articular distal radius fracture, three or more fragments",
+        "Right open carpal tunnel release"
+      ],
+      "indications": "The patient sustained a closed comminuted distal radius fracture after a fall. Computed tomography demonstrated separate radial styloid, volar lunate-facet, and dorsal articular fragments. Progressive median-distribution numbness and pain persisted despite reduction and elevation, consistent with acute carpal tunnel syndrome.",
+      "findings": "There were three major displaced articular fragments with metaphyseal comminution. The median nerve was intact but flattened beneath a tense transverse carpal ligament.",
+      "description": "The right upper extremity was prepared and draped after general anesthesia. A palmar incision was first made and the transverse carpal ligament was released under direct visualization. The median nerve was intact and free of constriction after release. A separate flexor carpi radialis approach was then used for the distal radius. The pronator quadratus was elevated, exposing the comminuted fracture. The radial styloid, volar lunate facet, and dorsal articular fragments were reduced independently and provisionally held with wires. Fluoroscopy confirmed restoration of length, inclination, and the articular surface. A volar locking plate was applied, with screws directed into and supporting each articular fragment. Final images showed an extra-articular screw position, a congruent joint, and stable distal radioulnar joint motion. The wounds were irrigated, the pronator quadratus was repaired where possible, and the skin was closed. A short-arm splint was applied. There were no complications."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "S52.571A",
+          "label": "Other intra-articular fracture of lower end of right radius, initial encounter for closed fracture",
+          "rationale": "The report documents active treatment of a closed right intra-articular distal radius fracture."
+        },
+        {
+          "code": "G56.01",
+          "label": "Carpal tunnel syndrome, right upper limb",
+          "rationale": "Acute right median nerve compression at the carpal tunnel is explicitly diagnosed and treated."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "25609",
+          "label": "Open fixation of intra-articular distal radius fracture involving three or more fragments",
+          "modifier": "RT",
+          "units": 1,
+          "rationale": "Three separately reduced articular fragments and internal fixation are documented."
+        },
+        {
+          "code": "64721",
+          "label": "Open median nerve decompression at the carpal tunnel",
+          "modifier": "RT",
+          "units": 1,
+          "rationale": "A separate open release was performed for documented acute carpal tunnel syndrome."
+        }
+      ]
+    },
+    "coding_notes": [
+      "Confirm that the acute neuropathy supports separate reporting under the payer's fracture-treatment policy.",
+      "Fluoroscopy used by the operating surgeon is commonly integral; do not infer a separate imaging charge from this sample."
+    ]
+  },
+  {
+    "id": "hand-003",
+    "title": "Left thumb carpometacarpal interposition arthroplasty with tendon transfer",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Primary osteoarthritis of the left thumb carpometacarpal joint"
+      ],
+      "postoperative_diagnoses": [
+        "Primary osteoarthritis of the left thumb carpometacarpal joint"
+      ],
+      "procedures": [
+        "Left thumb carpometacarpal interposition arthroplasty with trapeziectomy",
+        "Left flexor carpi radialis tendon transfer for ligament reconstruction"
+      ],
+      "indications": "The patient has advanced left thumb basal-joint arthritis with pain during pinch, loss of grip, and failure of bracing, anti-inflammatory medication, activity modification, and injections.",
+      "findings": "There was complete cartilage loss at the thumb carpometacarpal joint with osteophyte formation. The scaphotrapezoid articulation had preserved cartilage.",
+      "description": "Following regional anesthesia, the left arm was prepared and draped and a tourniquet was inflated. A dorsoradial incision was made over the thumb carpometacarpal joint. Branches of the superficial radial nerve and the radial artery were protected. The capsule was opened and the trapezium was removed in fragments, with care taken to preserve the flexor carpi radialis tendon. The scaphotrapezoid joint was inspected and did not require treatment. Through a separate forearm incision, the radial half of the flexor carpi radialis tendon was harvested while maintaining its distal insertion. The tendon slip was passed into the trapezial space and through a drill tunnel at the base of the first metacarpal to reconstruct the beak ligament and stabilize the metacarpal. The remaining tendon was folded as an interposition. Fluoroscopy and stress examination confirmed maintained suspension without impingement. The capsule and skin were closed, and a thumb-spica splint was applied. Estimated blood loss was minimal and no complications occurred."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M18.12",
+          "label": "Unilateral primary osteoarthritis of first carpometacarpal joint, left hand",
+          "rationale": "The operative indication and findings establish primary left thumb CMC arthritis."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "25447",
+          "label": "Interposition arthroplasty of an intercarpal or carpometacarpal joint",
+          "modifier": "LT",
+          "units": 1,
+          "rationale": "Trapeziectomy and soft-tissue interposition for the thumb CMC joint are described."
+        },
+        {
+          "code": "26480",
+          "label": "Single tendon transfer at the carpometacarpal area or dorsum of hand",
+          "modifier": "LT",
+          "units": 1,
+          "rationale": "A distally based FCR tendon slip was transferred through the first metacarpal for reconstruction."
+        }
+      ]
+    },
+    "coding_notes": [
+      "Separate reporting of the tendon transfer varies by payer and current bundling rules; verify before use.",
+      "Do not add a separate trapeziectomy code when that work is included in the selected arthroplasty code."
+    ]
+  },
+  {
+    "id": "hand-004",
+    "title": "Right ring and small finger Dupuytren fasciectomies",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Dupuytren disease of the right palm involving the ring and small fingers"
+      ],
+      "postoperative_diagnoses": [
+        "Dupuytren disease of the right palm involving the ring and small fingers"
+      ],
+      "procedures": [
+        "Right partial palmar fasciectomy with ring finger release including the proximal interphalangeal joint",
+        "Right partial palmar fasciectomy with additional small finger release including the proximal interphalangeal joint"
+      ],
+      "indications": "The patient has progressive pretendinous and spiral cords causing metacarpophalangeal and proximal interphalangeal contractures of the right ring and small fingers. The contractures interfere with hygiene, glove use, and placement of the hand flat on a table.",
+      "findings": "A central cord involved the ring finger and a spiral cord displaced the small-finger neurovascular bundle. Both cords extended beyond the metacarpophalangeal joints to the proximal interphalangeal joints.",
+      "description": "Under regional anesthesia, the right arm was prepared and draped and the tourniquet inflated. Bruner incisions were made from the palm into the ring and small fingers. Skin flaps were elevated carefully. The radial and ulnar neurovascular bundles of each digit were identified and protected throughout. Diseased palmar fascia was separated from normal transverse fibers. The ring-finger central cord was excised from the palm through its insertion beyond the proximal interphalangeal joint. The small-finger spiral cord was then dissected away from the displaced neurovascular bundle and excised through the proximal interphalangeal level. Residual accessory-collateral tightness was released sufficiently to obtain full passive extension without opening either joint. Both digits remained well perfused after tourniquet release. The wounds were irrigated and closed with local Z-plasties. A forearm-based extension splint was applied. No complications occurred."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M72.0",
+          "label": "Palmar fascial fibromatosis (Dupuytren)",
+          "rationale": "The report documents Dupuytren cords and contractures in the palm and two digits."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26123",
+          "label": "Partial palmar fasciectomy with release of one digit through the PIP joint",
+          "modifier": "F8",
+          "units": 1,
+          "rationale": "The ring-finger cord was excised from the palm through the PIP level."
+        },
+        {
+          "code": "26125",
+          "label": "Partial palmar fasciectomy with release of each additional digit through the PIP joint",
+          "modifier": "F9",
+          "units": 1,
+          "rationale": "The small finger was an additional digit released through the PIP level."
+        }
+      ]
+    },
+    "coding_notes": [
+      "26125 is an add-on candidate and should be linked to the primary fasciectomy code.",
+      "Confirm the payer's preferred digit modifiers."
+    ]
+  },
+  {
+    "id": "hand-005",
+    "title": "Right index finger zone 2 flexor tendon and digital nerve repairs",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Right index finger zone 2 flexor digitorum profundus and superficialis tendon lacerations",
+        "Right index finger radial digital nerve laceration"
+      ],
+      "postoperative_diagnoses": [
+        "Complete right index finger zone 2 flexor digitorum profundus and superficialis tendon lacerations",
+        "Complete right index finger radial digital nerve laceration"
+      ],
+      "procedures": [
+        "Primary repair of right index finger flexor digitorum profundus tendon in zone 2",
+        "Primary repair of right index finger flexor digitorum superficialis tendon in zone 2",
+        "Primary repair of right index finger radial digital nerve"
+      ],
+      "indications": "The patient sustained a sharp laceration across the volar right index finger and could no longer flex the proximal or distal interphalangeal joints. Sensation was absent along the radial side of the digit. The wound was irrigated and temporarily closed in the emergency department before definitive repair.",
+      "findings": "Both flexor tendons and the radial digital nerve were completely divided in zone 2. The ulnar digital bundle was intact, and there was no fracture or gross contamination.",
+      "description": "The prior wound was extended in a Bruner pattern under regional anesthesia and tourniquet control. The radial and ulnar digital bundles were identified. The flexor sheath was opened only as needed while preserving the A2 and A4 pulleys. The proximal and distal ends of the flexor digitorum profundus and both slips of the superficialis were retrieved. Each tendon was repaired primarily with a multistrand core construct and running epitendinous suture. The repairs glided beneath the preserved pulleys without gapping during passive motion. The divided radial digital nerve ends were trimmed to healthy fascicles and approximated without tension using microsurgical epineurial sutures. The ulnar bundle remained undisturbed. The wound was irrigated and closed, and a dorsal blocking splint was applied with the wrist and metacarpophalangeal joints flexed. The finger was well perfused and there were no complications."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "S66.120A",
+          "label": "Laceration of flexor muscle, fascia and tendon of right index finger at wrist and hand level, initial encounter",
+          "rationale": "The report documents active treatment of right index flexor tendon lacerations at hand level."
+        },
+        {
+          "code": "S64.490A",
+          "label": "Injury of digital nerve of right index finger, initial encounter",
+          "rationale": "A complete radial digital nerve laceration is documented and repaired."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26356",
+          "label": "Primary zone 2 digital flexor tendon repair, each tendon",
+          "modifier": "F6",
+          "units": 2,
+          "rationale": "Separate primary repairs of the FDP and FDS tendons in zone 2 are documented."
+        },
+        {
+          "code": "64831",
+          "label": "Repair of one digital nerve",
+          "modifier": "F6",
+          "units": 1,
+          "rationale": "One radial digital nerve was repaired directly."
+        }
+      ]
+    },
+    "coding_notes": [
+      "Verify payer line-item and unit conventions for two tendons repaired in the same digit.",
+      "Confirm current edits governing separate digital nerve and tendon repair reporting."
+    ]
+  },
+  {
+    "id": "hand-006",
+    "title": "Right thumb ulnar collateral ligament and trigger thumb releases",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Acute right thumb metacarpophalangeal ulnar collateral ligament tear",
+        "Right trigger thumb"
+      ],
+      "postoperative_diagnoses": [
+        "Displaced right thumb metacarpophalangeal ulnar collateral ligament tear with Stener lesion",
+        "Right trigger thumb"
+      ],
+      "procedures": [
+        "Primary repair of right thumb metacarpophalangeal ulnar collateral ligament",
+        "Right thumb A1 pulley release"
+      ],
+      "indications": "The patient sustained a forced-abduction injury of the right thumb with marked metacarpophalangeal instability. Imaging and examination suggested a displaced ulnar collateral ligament tear. The patient also had pre-existing painful locking at the thumb A1 pulley despite injection.",
+      "findings": "The ulnar collateral ligament was avulsed from the proximal phalanx and displaced superficial to the adductor aponeurosis. The A1 pulley was thickened, and the flexor pollicis longus tendon was intact.",
+      "description": "After regional anesthesia, the right upper extremity was prepared and draped. A curvilinear incision was made over the ulnar aspect of the thumb metacarpophalangeal joint. The superficial radial nerve branches were protected. The adductor aponeurosis was opened, revealing the displaced ligament. The insertion site on the proximal phalanx was prepared, and the ligament was secured anatomically with a suture anchor. Stress testing showed a stable joint in flexion and extension. The aponeurosis was repaired. Through a separate transverse incision at the volar metacarpophalangeal crease, both digital neurovascular bundles were protected and the A1 pulley was released. The flexor pollicis longus tendon moved freely without residual triggering. Both wounds were irrigated and closed. A thumb-spica splint was applied. There were no complications."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "S63.641A",
+          "label": "Sprain of metacarpophalangeal joint of right thumb, initial encounter",
+          "rationale": "The report documents active treatment of an acute right thumb MCP collateral ligament injury."
+        },
+        {
+          "code": "M65.311",
+          "label": "Trigger thumb, right thumb",
+          "rationale": "Independent symptomatic right trigger thumb is documented and treated."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "26540",
+          "label": "Repair of collateral ligament at an MCP or IP joint",
+          "modifier": "F5",
+          "units": 1,
+          "rationale": "The thumb MCP ulnar collateral ligament was repaired to its insertion."
+        },
+        {
+          "code": "26055",
+          "label": "Trigger digit tendon-sheath release",
+          "modifier": "F5",
+          "units": 1,
+          "rationale": "A distinct A1 pulley release was performed through a separate incision."
+        }
+      ]
+    },
+    "coding_notes": [
+      "Same-digit procedures can trigger edits; separate pathology and incisions do not by themselves guarantee separate payment.",
+      "Confirm injury-code specificity and external-cause reporting from the complete chart."
+    ]
+  },
+  {
+    "id": "hand-007",
+    "title": "Left cubital and carpal tunnel releases",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Left ulnar neuropathy at the elbow",
+        "Left carpal tunnel syndrome"
+      ],
+      "postoperative_diagnoses": [
+        "Left ulnar neuropathy at the elbow",
+        "Left carpal tunnel syndrome"
+      ],
+      "procedures": [
+        "Left cubital tunnel release with anterior subcutaneous transposition of the ulnar nerve",
+        "Left open carpal tunnel release"
+      ],
+      "indications": "The patient has persistent numbness in both the ulnar and median distributions, intrinsic weakness, positive provocative testing at the elbow and wrist, and electrodiagnostic confirmation of compression at both sites. Symptoms persisted after nighttime extension bracing, wrist splinting, and activity modification.",
+      "findings": "The ulnar nerve was constricted at Osborne's ligament and subluxated over the medial epicondyle after decompression, requiring transposition. The median nerve was flattened beneath the transverse carpal ligament.",
+      "description": "The left arm was prepared and draped under regional anesthesia. At the elbow, an incision was made posterior to the medial epicondyle. The medial antebrachial cutaneous branches were protected. The ulnar nerve was released proximally through the arcade and distally between the flexor carpi ulnaris heads. Because the nerve subluxated with elbow flexion, it was mobilized and placed in a tension-free anterior subcutaneous pocket. A fascial sling held the nerve without compression. Attention was then directed to the wrist. Through a separate palmar incision, the transverse carpal ligament and distal antebrachial fascia were divided under direct vision. The median nerve was inspected and remained intact. Both wounds were irrigated and closed, and sterile dressings were applied. The patient tolerated the procedure without complication."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "G56.22",
+          "label": "Lesion of ulnar nerve, left upper limb",
+          "rationale": "The report localizes symptomatic left ulnar neuropathy to the elbow."
+        },
+        {
+          "code": "G56.02",
+          "label": "Carpal tunnel syndrome, left upper limb",
+          "rationale": "Separate left median neuropathy at the carpal tunnel is documented."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "64718",
+          "label": "Ulnar nerve decompression or transposition at the elbow",
+          "modifier": "LT",
+          "units": 1,
+          "rationale": "The ulnar nerve was decompressed and transposed at the left elbow."
+        },
+        {
+          "code": "64721",
+          "label": "Open median nerve decompression at the carpal tunnel",
+          "modifier": "LT",
+          "units": 1,
+          "rationale": "A distinct open left carpal tunnel release was performed."
+        }
+      ]
+    },
+    "coding_notes": [
+      "The procedures occur at different anatomic sites; verify payer modifier requirements for multiple procedures on one limb.",
+      "The transposition work is represented by the ulnar nerve procedure candidate and is not listed separately."
+    ]
+  },
+  {
+    "id": "hand-008",
+    "title": "Left de Quervain and trigger thumb releases",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Left de Quervain tenosynovitis",
+        "Left trigger thumb"
+      ],
+      "postoperative_diagnoses": [
+        "Left de Quervain tenosynovitis with separate extensor pollicis brevis subsheath",
+        "Left trigger thumb"
+      ],
+      "procedures": [
+        "Release of left first dorsal extensor compartment",
+        "Left thumb A1 pulley release"
+      ],
+      "indications": "The patient has radial wrist pain with a positive Finkelstein maneuver and painful thumb locking. Symptoms continued despite bracing, therapy, anti-inflammatory medication, and corticosteroid injections at both sites.",
+      "findings": "The first extensor compartment was markedly stenotic, and the extensor pollicis brevis occupied a separate subsheath. The thumb A1 pulley was thickened with mild flexor pollicis longus synovitis.",
+      "description": "After local anesthesia with monitored sedation, the left upper extremity was prepared and draped. A transverse incision was made over the first dorsal compartment. Superficial radial nerve branches were identified and protected. The compartment roof was opened dorsally to reduce volar tendon subluxation. The abductor pollicis longus slips were released, and a separate septum over the extensor pollicis brevis was identified and divided completely. Both tendons glided freely. Through a separate transverse incision at the thumb metacarpophalangeal crease, the radial and ulnar digital bundles were protected. The A1 pulley was divided longitudinally, and a small amount of inflamed synovium was removed. The flexor pollicis longus tendon was intact and glided without triggering. The wounds were irrigated and closed, and a soft dressing was placed. There were no complications."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M65.4",
+          "label": "Radial styloid tenosynovitis (de Quervain)",
+          "rationale": "The report documents stenosis of the left first dorsal compartment."
+        },
+        {
+          "code": "M65.312",
+          "label": "Trigger thumb, left thumb",
+          "rationale": "The report documents independent left thumb A1 pulley stenosis and locking."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "25000",
+          "label": "Extensor tendon-sheath release at the radial styloid",
+          "modifier": "LT",
+          "units": 1,
+          "rationale": "The first dorsal compartment and EPB subsheath were released."
+        },
+        {
+          "code": "26055",
+          "label": "Trigger digit tendon-sheath release",
+          "modifier": "FA",
+          "units": 1,
+          "rationale": "A separate left thumb A1 pulley release is documented."
+        }
+      ]
+    },
+    "coding_notes": [
+      "Confirm the payer's preferred laterality or digit modifiers.",
+      "Incidental synovium removal is not assigned an additional candidate code."
+    ]
+  },
+  {
+    "id": "hand-009",
+    "title": "Left wrist arthroscopic TFCC debridement and ECU tenosynovectomy",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Left central triangular fibrocartilage complex tear",
+        "Left extensor carpi ulnaris tenosynovitis"
+      ],
+      "postoperative_diagnoses": [
+        "Stable central left triangular fibrocartilage complex tear",
+        "Left sixth dorsal compartment extensor carpi ulnaris tenosynovitis"
+      ],
+      "procedures": [
+        "Left wrist arthroscopy with triangular fibrocartilage complex debridement",
+        "Open left sixth dorsal compartment extensor carpi ulnaris tenosynovectomy"
+      ],
+      "indications": "The patient has persistent ulnar-sided left wrist pain, mechanical catching, and swelling along the extensor carpi ulnaris tendon. Magnetic resonance imaging showed a central TFCC tear and ECU tenosynovitis. Bracing, therapy, and injections failed.",
+      "findings": "Arthroscopy showed a central TFCC flap with a stable peripheral attachment and stable distal radioulnar joint. Separate florid synovitis surrounded the ECU tendon in the sixth dorsal compartment; the tendon and subsheath were intact.",
+      "description": "Under regional anesthesia, the left arm was prepared and suspended in traction. Standard radiocarpal portals were established. Diagnostic arthroscopy confirmed intact scapholunate and lunotriquetral ligaments and a central TFCC flap. The unstable central tissue was excised to a stable rim with a shaver and punch. The peripheral TFCC passed a trampoline test and was not repaired. Traction was released. Through a separate longitudinal incision over the sixth dorsal compartment, dorsal sensory nerve branches were protected and the sheath was opened. Hypertrophic synovium was excised circumferentially from the ECU tendon while preserving the stable subsheath. The tendon was intact and tracked normally through forearm rotation. The arthroscopy portals and open incision were irrigated and closed. A short-arm splint was applied. No complications occurred."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "S63.592A",
+          "label": "Other specified sprain of left wrist, initial encounter",
+          "rationale": "The report documents active treatment of a left TFCC tear; final diagnosis-code selection depends on injury history and payer convention."
+        },
+        {
+          "code": "M65.832",
+          "label": "Other synovitis and tenosynovitis, left forearm",
+          "rationale": "Separate ECU tendon-sheath synovitis is documented at the distal forearm/wrist."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "29846",
+          "label": "Wrist arthroscopy with TFCC excision or joint debridement",
+          "modifier": "LT",
+          "units": 1,
+          "rationale": "A central TFCC flap was arthroscopically debrided to a stable rim."
+        },
+        {
+          "code": "25118",
+          "label": "Extensor tendon-sheath synovectomy at the wrist, one compartment",
+          "modifier": "LT",
+          "units": 1,
+          "rationale": "A separate open sixth-compartment ECU tenosynovectomy was performed."
+        }
+      ]
+    },
+    "coding_notes": [
+      "Confirm whether injury or degenerative etiology supports the final diagnosis code and seventh character.",
+      "Verify current edits and documentation requirements before separately reporting open tendon-sheath work with wrist arthroscopy."
+    ]
+  },
+  {
+    "id": "hand-010",
+    "title": "Right dorsal wrist ganglion excision with posterior interosseous neurectomy",
+    "encounter_type": "operative_report",
+    "synthetic": true,
+    "dictation": {
+      "preoperative_diagnoses": [
+        "Recurrent symptomatic right dorsal wrist ganglion",
+        "Chronic right wrist pain"
+      ],
+      "postoperative_diagnoses": [
+        "Recurrent symptomatic right dorsal wrist ganglion",
+        "Chronic right wrist pain"
+      ],
+      "procedures": [
+        "Open excision of recurrent right dorsal wrist ganglion",
+        "Right posterior interosseous nerve neurectomy"
+      ],
+      "indications": "The patient has a recurrent dorsal wrist mass after prior open excision, with pain during extension and loading. Magnetic resonance imaging showed a ganglion arising from the dorsal scapholunate interval without ligament disruption. A diagnostic posterior interosseous nerve block separately produced substantial temporary pain relief, and the patient elected denervation in addition to mass excision.",
+      "findings": "A multiloculated ganglion arose from a stalk at the dorsal scapholunate capsule. The scapholunate ligament was intact. The terminal posterior interosseous nerve was identified in the floor of the fourth dorsal compartment.",
+      "description": "The right upper extremity was prepared and draped after regional anesthesia. A transverse dorsal incision was made over the mass. Dorsal sensory branches and extensor tendons were protected. The ganglion was dissected circumferentially and followed to its capsular stalk at the scapholunate interval. The mass and stalk were excised, and a small cuff of capsule was removed without violating the scapholunate ligament. Through the same exposure but a separate deep dissection, the fourth dorsal compartment was elevated and the terminal posterior interosseous nerve was identified. A one-centimeter segment was excised and the proximal end allowed to retract. The specimen was sent to pathology. The wound was irrigated and closed, and a short-arm splint was applied. Estimated blood loss was minimal and there were no complications."
+    },
+    "billing_candidates": {
+      "icd10cm": [
+        {
+          "code": "M67.431",
+          "label": "Ganglion, right wrist",
+          "rationale": "A recurrent right dorsal wrist ganglion is documented and excised."
+        },
+        {
+          "code": "M25.531",
+          "label": "Pain in right wrist",
+          "rationale": "Independent chronic wrist pain supported by a successful diagnostic nerve block is documented for the denervation procedure."
+        }
+      ],
+      "cpt": [
+        {
+          "code": "25112",
+          "label": "Open excision of recurrent wrist ganglion",
+          "modifier": "RT",
+          "units": 1,
+          "rationale": "The report explicitly identifies a recurrent ganglion and describes open excision of its stalk."
+        },
+        {
+          "code": "64772",
+          "label": "Posterior interosseous nerve neurectomy",
+          "modifier": "RT",
+          "units": 1,
+          "rationale": "A segment of the terminal posterior interosseous nerve was intentionally excised for pain control."
+        }
+      ]
+    },
+    "coding_notes": [
+      "Verify the prior operative history supporting use of the recurrent rather than primary ganglion code.",
+      "Confirm payer policy and medical necessity requirements for posterior interosseous neurectomy."
+    ]
+  }
+]
