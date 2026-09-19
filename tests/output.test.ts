@@ -4,11 +4,12 @@ import test from 'node:test';
 import type { ExtractionResult } from '../src/extractor.ts';
 import type { StreamSnapshot } from '../src/stream.ts';
 
+import { createInPlaceRenderer } from '../src/loader.ts';
 import {
   formatBatchOutput,
-  formatBatchResult,
   formatStreamOutput,
   formatStreamResult,
+  formatTable,
   parseOutputMode,
 } from '../src/output.ts';
 
@@ -49,13 +50,15 @@ const RESULT: ExtractionResult = {
 };
 
 await test('formats batch results for a person', () => {
-  const output = formatBatchResult(RESULT);
+  const output = formatTable(RESULT, { columns: 100 });
 
-  assert.match(output, /^Billing code suggestions/u);
-  assert.match(output, /Matches \(1\)[\s\S]*CPT 64721/u);
-  assert.match(output, /likelihood 99% · confidence 97%/u);
-  assert.match(output, /Manual review \(1\)[\s\S]*G56\.02/u);
-  assert.match(output, /Model jev-test · tokens 100 in \/ 20 out$/u);
+  assert.match(output, /^┌/u);
+  assert.match(output, /Status[\s\S]*Code[\s\S]*Likelihood/u);
+  assert.match(output, /Match[\s\S]*CPT 64721[\s\S]*99%[\s\S]*97%/u);
+  assert.match(output, /Review[\s\S]*G56\.02[\s\S]*75%[\s\S]*60%/u);
+  assert.match(output, /Open median nerve[\s\S]*carpal tunnel/u);
+  assert.doesNotMatch(output, /…/u);
+  assert.doesNotMatch(output, /Billing code suggestions|Model|tokens/u);
 });
 
 await test('formats final stream status and voice termination', () => {
@@ -70,8 +73,9 @@ await test('formats final stream status and voice termination', () => {
 
   const output = formatStreamResult(snapshot);
 
-  assert.match(output, /^Final billing codes · revision 4 · session case-123/u);
+  assert.match(output, /^Final · revision 4 · session case-123/u);
   assert.match(output, /Ended by voice command for doctor Jane Smith/u);
+  assert.match(output, /┌.*┬.*┐/u);
 });
 
 await test('accepts only the documented output modes', () => {
@@ -96,4 +100,29 @@ await test('formats batch JSON with indentation and stream JSON as NDJSON record
   assert.doesNotMatch(stream, /\n/u);
   assert.deepEqual(JSON.parse(batch), RESULT);
   assert.deepEqual(JSON.parse(stream), snapshot);
+});
+
+await test('adds colors only when requested', () => {
+  const plain = formatTable(RESULT);
+  const colored = formatTable(RESULT, { color: true });
+
+  assert.equal(plain.includes('\u001B'), false);
+  assert.equal(colored.includes('\u001B[32m'), true);
+  assert.equal(colored.includes('\u001B[33m'), true);
+  assert.equal(colored.includes('\u001B[36m'), true);
+});
+
+await test('repaints stream output in place and clears leftover lines', () => {
+  const chunks: string[] = [];
+  const render = createInPlaceRenderer((chunk) => {
+    chunks.push(chunk);
+  });
+
+  render('first\nsecond');
+  render('replacement');
+
+  const output = chunks.join('');
+  assert.equal(output.includes('\u001B[2F'), true);
+  assert.equal(output.includes('\u001B[2Kreplacement\n'), true);
+  assert.equal(output.endsWith('\u001B[2K\n\u001B[1F'), true);
 });

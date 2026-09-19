@@ -5,6 +5,7 @@ const ZERO = 0;
 const ONE = 1;
 const FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'] as const;
 const CLEAR_LINE = '\r\u001B[2K';
+const ERASE_LINE = '\u001B[2K';
 
 interface Loader {
   start: () => void;
@@ -41,5 +42,25 @@ const createLoader = (
   return { start, stop };
 };
 
+const createInPlaceRenderer = (
+  write: (output: string) => void,
+): ((output: string) => void) => {
+  let previousLines = ZERO;
+  return (output): void => {
+    const lines = output.split('\n');
+    const totalLines = Math.max(previousLines, lines.length);
+    if (previousLines > ZERO) {
+      write(`\u001B[${previousLines}F`);
+    }
+    for (let index = ZERO; index < totalLines; index += ONE) {
+      write(`${ERASE_LINE}${lines[index] ?? ''}\n`);
+    }
+    if (totalLines > lines.length) {
+      write(`\u001B[${totalLines - lines.length}F`);
+    }
+    previousLines = lines.length;
+  };
+};
+
 export type { Loader };
-export { createLoader };
+export { createInPlaceRenderer, createLoader };

@@ -14,7 +14,7 @@ import type { OutputMode } from './output.ts';
 import type { StreamSnapshot } from './stream.ts';
 
 import { createExtractor, loadCatalog } from './extractor.ts';
-import { createLoader } from './loader.ts';
+import { createInPlaceRenderer, createLoader } from './loader.ts';
 import {
   formatBatchOutput,
   formatStreamOutput,
@@ -70,7 +70,12 @@ const readDictation = (path: string | undefined): Promise<string> => {
 };
 
 const writeBatchResult = (result: ExtractionResult, mode: OutputMode): void => {
-  process.stdout.write(`${formatBatchOutput(result, mode)}\n`);
+  process.stdout.write(
+    `${formatBatchOutput(result, mode, {
+      color: mode === 'human' && process.stdout.isTTY,
+      columns: process.stdout.columns,
+    })}\n`,
+  );
 };
 
 const readLines = (path: string | undefined): AsyncIterable<string> => {
@@ -90,15 +95,26 @@ const configuredExtractor = async (
 
 const streamWriter = (mode: OutputMode): ((result: StreamSnapshot) => void) => {
   let first = true;
+  const inPlace = createInPlaceRenderer((output) => {
+    process.stdout.write(output);
+  });
   return (result): void => {
     if (mode === 'json') {
       process.stdout.write(`${formatStreamOutput(result, mode)}\n`);
       return;
     }
+    const output = formatStreamOutput(result, mode, {
+      color: process.stdout.isTTY,
+      columns: process.stdout.columns,
+    });
+    if (process.stdout.isTTY) {
+      inPlace(output);
+      return;
+    }
     if (!first) {
       process.stdout.write('\n');
     }
-    process.stdout.write(`${formatStreamOutput(result, mode)}\n`);
+    process.stdout.write(`${output}\n`);
     first = false;
   };
 };

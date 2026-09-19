@@ -12,7 +12,7 @@ pnpm start --input dictation.txt
 cat dictation.txt | pnpm start
 ```
 
-The default output is formatted for people and shows an interactive loader when
+The default output is a color-coded table and shows an interactive loader when
 run in a terminal. Use `--output json` or `-o json` for pretty-printed JSON:
 
 ```sh
@@ -41,11 +41,12 @@ dictation. A standalone finalized transcript event containing
 included in the medical transcript. Interim events and longer sentences
 containing those words do not trigger termination.
 
-The default stream output is human-readable. With `--output json`, the CLI
-writes complete code snapshots as NDJSON. Provisional snapshots have
-`"final":false`; the last snapshot has `"final":true` and a `termination`
-object. Extraction is debounced, only one request runs at a time, and stale
-results are suppressed when a newer transcript revision arrives.
+The default stream output updates its color-coded table in place. When output is
+redirected, snapshots are appended without terminal control codes. With
+`--output json`, the CLI writes complete code snapshots as NDJSON. Provisional
+snapshots have `"final":false`; the last snapshot has `"final":true` and a
+`termination` object. Extraction is debounced, only one request runs at a time,
+and stale results are suppressed when a newer transcript revision arrives.
 
 ## Sample data
 
