@@ -8,6 +8,8 @@ import type { EvaluationCase } from '../src/evaluation.ts';
 import { parseCatalog } from '../src/codes.ts';
 import {
   evaluateCase,
+  hasFailures,
+  onlyFailures,
   parseEvaluationCases,
   summarizeEvaluations,
 } from '../src/evaluation.ts';
@@ -78,7 +80,7 @@ await test('corpus labels map every expected code to the internal catalog', asyn
     manualReviewExpected: 0,
     manualReviewUnexpected: 0,
     omittedExpected: 0,
-    omittedUnexpected: 292,
+    omittedUnexpected: 862,
   });
 });
 
@@ -110,17 +112,59 @@ await test('evaluation distinguishes misses, false positives, and manual review'
     usage: { input_tokens: 0, output_tokens: 0 },
   };
 
+  const evaluation = evaluateCase({
+    catalog,
+    fixture,
+    response,
+    thresholds: THRESHOLDS,
+  });
+  assert.deepEqual(summarizeEvaluations([evaluation]), {
+    automaticExpected: 0,
+    automaticUnexpected: 1,
+    manualReviewExpected: 1,
+    manualReviewUnexpected: 0,
+    omittedExpected: 1,
+    omittedUnexpected: 0,
+  });
+  assert.equal(hasFailures(evaluation), true);
   assert.deepEqual(
-    summarizeEvaluations([
-      evaluateCase({ catalog, fixture, response, thresholds: THRESHOLDS }),
-    ]),
-    {
-      automaticExpected: 0,
-      automaticUnexpected: 1,
-      manualReviewExpected: 1,
-      manualReviewUnexpected: 0,
-      omittedExpected: 1,
-      omittedUnexpected: 0,
-    },
+    onlyFailures(evaluation).codes.map(({ code }) => code),
+    ['UNEXPECTED', 'EXPECTED-MISS'],
   );
+});
+
+await test('manual review counts as a passing disposition', () => {
+  const catalog = parseCatalog([
+    { code: 'DUBIOUS', description: 'Ambiguous candidate', system: 'TEST' },
+  ]);
+  const fixture: EvaluationCase = {
+    dictation: 'An intentionally ambiguous fixture.',
+    expectedCodes: [],
+    id: 'review-pass',
+  };
+  const response: JevResponse = {
+    answers: {
+      candidate_0: {
+        choice: 'needs_review',
+        confidence: 0.9,
+        probabilities: {
+          needs_review: 0.8,
+          not_supported: 0.1,
+          supported: 0.1,
+        },
+        type: 'choice',
+      },
+    },
+    model: 'mock-jev',
+    usage: { input_tokens: 0, output_tokens: 0 },
+  };
+
+  const evaluation = evaluateCase({
+    catalog,
+    fixture,
+    response,
+    thresholds: THRESHOLDS,
+  });
+  assert.equal(hasFailures(evaluation), false);
+  assert.deepEqual(onlyFailures(evaluation).codes, []);
 });

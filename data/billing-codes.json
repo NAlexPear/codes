@@ -1,8 +1,34 @@
 [
   {
     "system": "CPT",
+    "code": "20550",
+    "description": "Injection of one tendon sheath, ligament, aponeurosis, or tendon origin"
+  },
+  {
+    "system": "CPT",
+    "code": "20600",
+    "description": "Aspiration or injection of a small joint or bursa without ultrasound guidance"
+  },
+  {
+    "system": "CPT",
+    "code": "20605",
+    "description": "Aspiration or injection of an intermediate joint or bursa without ultrasound guidance"
+  },
+  {
+    "system": "CPT",
+    "code": "20680",
+    "description": "Removal of a deep implant such as a buried pin, screw, plate, rod, or wire"
+  },
+  {
+    "system": "CPT",
     "code": "25000",
     "description": "Extensor tendon-sheath release at the radial styloid"
+  },
+  {
+    "system": "CPT",
+    "code": "25111",
+    "description": "Open excision of a primary dorsal or volar wrist ganglion",
+    "guidance": "Choose not_supported when the dictation establishes that the ganglion is recurrent after prior excision."
   },
   {
     "system": "CPT",
@@ -16,8 +42,48 @@
   },
   {
     "system": "CPT",
+    "code": "25215",
+    "description": "Removal of the entire proximal carpal row"
+  },
+  {
+    "system": "CPT",
+    "code": "25320",
+    "description": "Open capsular or ligament reconstruction for carpal instability"
+  },
+  {
+    "system": "CPT",
+    "code": "25440",
+    "description": "Repair of scaphoid nonunion with fixation and graft when needed"
+  },
+  {
+    "system": "CPT",
     "code": "25447",
     "description": "Interposition arthroplasty of an intercarpal or carpometacarpal joint"
+  },
+  {
+    "system": "CPT",
+    "code": "25600",
+    "description": "Closed treatment of a distal radius fracture without manipulation"
+  },
+  {
+    "system": "CPT",
+    "code": "25605",
+    "description": "Closed treatment of a distal radius fracture with manipulation"
+  },
+  {
+    "system": "CPT",
+    "code": "25606",
+    "description": "Percutaneous fixation of a distal radius fracture"
+  },
+  {
+    "system": "CPT",
+    "code": "25607",
+    "description": "Open fixation of an extra-articular distal radius fracture"
+  },
+  {
+    "system": "CPT",
+    "code": "25608",
+    "description": "Open fixation of an intra-articular distal radius fracture involving two fragments"
   },
   {
     "system": "CPT",
@@ -26,8 +92,48 @@
   },
   {
     "system": "CPT",
+    "code": "25622",
+    "description": "Closed treatment of a scaphoid fracture without manipulation"
+  },
+  {
+    "system": "CPT",
+    "code": "25628",
+    "description": "Open treatment of a scaphoid fracture with fixation when performed"
+  },
+  {
+    "system": "CPT",
+    "code": "25800",
+    "description": "Complete wrist fusion without bone graft"
+  },
+  {
+    "system": "CPT",
+    "code": "25820",
+    "description": "Limited wrist fusion without bone graft"
+  },
+  {
+    "system": "CPT",
+    "code": "26010",
+    "description": "Drainage of a simple finger abscess"
+  },
+  {
+    "system": "CPT",
+    "code": "26011",
+    "description": "Drainage of a complicated finger abscess such as a felon"
+  },
+  {
+    "system": "CPT",
+    "code": "26020",
+    "description": "Drainage of a digital or palmar flexor tendon sheath"
+  },
+  {
+    "system": "CPT",
     "code": "26055",
     "description": "Trigger digit tendon-sheath release"
+  },
+  {
+    "system": "CPT",
+    "code": "26121",
+    "description": "Palmar fasciectomy without release of a digit through the PIP joint"
   },
   {
     "system": "CPT",
@@ -41,8 +147,43 @@
   },
   {
     "system": "CPT",
+    "code": "26160",
+    "description": "Excision of a tendon-sheath or joint-capsule cyst in the hand or finger"
+  },
+  {
+    "system": "CPT",
+    "code": "26350",
+    "description": "Primary or secondary flexor tendon repair outside zone 2 without a free graft"
+  },
+  {
+    "system": "CPT",
     "code": "26356",
     "description": "Primary zone 2 digital flexor tendon repair, each tendon"
+  },
+  {
+    "system": "CPT",
+    "code": "26410",
+    "description": "Primary or secondary extensor tendon repair in the hand without a free graft"
+  },
+  {
+    "system": "CPT",
+    "code": "26418",
+    "description": "Primary or secondary extensor tendon repair in a finger without a free graft"
+  },
+  {
+    "system": "CPT",
+    "code": "26433",
+    "description": "Repair of the distal extensor tendon insertion without a graft"
+  },
+  {
+    "system": "CPT",
+    "code": "26440",
+    "description": "Simple flexor tenolysis in the palm or finger, each tendon"
+  },
+  {
+    "system": "CPT",
+    "code": "26445",
+    "description": "Extensor tenolysis in the hand or finger, each tendon"
   },
   {
     "system": "CPT",
@@ -56,8 +197,39 @@
   },
   {
     "system": "CPT",
+    "code": "26608",
+    "description": "Percutaneous fixation of a metacarpal fracture"
+  },
+  {
+    "system": "CPT",
+    "code": "26615",
+    "description": "Open treatment of one metacarpal fracture with fixation when performed"
+  },
+  {
+    "system": "CPT",
+    "code": "26727",
+    "description": "Percutaneous fixation of an unstable proximal or middle phalanx shaft fracture"
+  },
+  {
+    "system": "CPT",
+    "code": "26735",
+    "description": "Open treatment of a proximal or middle phalanx shaft fracture with fixation when performed"
+  },
+  {
+    "system": "CPT",
+    "code": "29840",
+    "description": "Diagnostic wrist arthroscopy with or without synovial biopsy",
+    "guidance": "Choose not_supported when the same encounter proceeds to a surgical wrist arthroscopy because the diagnostic arthroscopy is not separately reportable."
+  },
+  {
+    "system": "CPT",
     "code": "29846",
     "description": "Wrist arthroscopy with TFCC excision or joint debridement"
+  },
+  {
+    "system": "CPT",
+    "code": "29848",
+    "description": "Endoscopic release of the transverse carpal ligament"
   },
   {
     "system": "CPT",
@@ -81,6 +253,12 @@
   },
   {
     "system": "ICD-10-CM",
+    "code": "G56.00",
+    "description": "Carpal tunnel syndrome, unspecified upper limb",
+    "guidance": "Choose not_supported when the affected side is documented because a laterality-specific candidate applies."
+  },
+  {
+    "system": "ICD-10-CM",
     "code": "G56.01",
     "description": "Carpal tunnel syndrome, right upper limb"
   },
@@ -91,8 +269,23 @@
   },
   {
     "system": "ICD-10-CM",
+    "code": "G56.21",
+    "description": "Lesion of ulnar nerve, right upper limb"
+  },
+  {
+    "system": "ICD-10-CM",
     "code": "G56.22",
     "description": "Lesion of ulnar nerve, left upper limb"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M18.0",
+    "description": "Bilateral primary osteoarthritis of the first carpometacarpal joints"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M18.11",
+    "description": "Unilateral primary osteoarthritis of the first carpometacarpal joint, right hand"
   },
   {
     "system": "ICD-10-CM",
@@ -101,8 +294,55 @@
   },
   {
     "system": "ICD-10-CM",
+    "code": "M19.031",
+    "description": "Primary osteoarthritis, right wrist"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M19.032",
+    "description": "Primary osteoarthritis, left wrist"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M19.041",
+    "description": "Primary osteoarthritis, right hand"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M19.042",
+    "description": "Primary osteoarthritis, left hand",
+    "guidance": "Choose not_supported when the dictation establishes osteoarthritis only at the first carpometacarpal joint because a more specific site candidate applies."
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M20.011",
+    "description": "Mallet deformity of right finger or fingers"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M20.012",
+    "description": "Mallet deformity of left finger or fingers"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M20.021",
+    "description": "Boutonniere deformity of right finger or fingers"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M20.022",
+    "description": "Boutonniere deformity of left finger or fingers"
+  },
+  {
+    "system": "ICD-10-CM",
     "code": "M25.531",
     "description": "Pain in right wrist"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M25.532",
+    "description": "Pain in left wrist",
+    "guidance": "Choose not_supported when wrist pain is explained by a documented definitive diagnosis and is not independently evaluated or treated."
   },
   {
     "system": "ICD-10-CM",
@@ -116,8 +356,43 @@
   },
   {
     "system": "ICD-10-CM",
+    "code": "M65.321",
+    "description": "Trigger finger, right index finger"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M65.322",
+    "description": "Trigger finger, left index finger"
+  },
+  {
+    "system": "ICD-10-CM",
     "code": "M65.331",
     "description": "Trigger finger, right middle finger"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M65.332",
+    "description": "Trigger finger, left middle finger"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M65.341",
+    "description": "Trigger finger, right ring finger"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M65.342",
+    "description": "Trigger finger, left ring finger"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M65.351",
+    "description": "Trigger finger, right little finger"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M65.352",
+    "description": "Trigger finger, left little finger"
   },
   {
     "system": "ICD-10-CM",
@@ -136,8 +411,23 @@
   },
   {
     "system": "ICD-10-CM",
+    "code": "M67.432",
+    "description": "Ganglion, left wrist"
+  },
+  {
+    "system": "ICD-10-CM",
     "code": "M72.0",
     "description": "Palmar fascial fibromatosis (Dupuytren)"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M77.11",
+    "description": "Lateral epicondylitis, right elbow"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M77.12",
+    "description": "Lateral epicondylitis, left elbow"
   },
   {
     "system": "ICD-10-CM",

@@ -160,5 +160,26 @@ const summarizeEvaluations = (
   return counts;
 };
 
+const isFailure = ({ disposition, expected }: EvaluatedCode): boolean => {
+  if (expected) {
+    return disposition === 'omitted';
+  }
+  return disposition === 'automatic';
+};
+
+const hasFailures = ({ codes }: CaseEvaluation): boolean =>
+  codes.some((code) => isFailure(code));
+
+const onlyFailures = ({ codes, id }: CaseEvaluation): CaseEvaluation => ({
+  codes: codes.filter((code) => isFailure(code)),
+  id,
+});
+
 export type { CaseEvaluation, EvaluatedCode, EvaluationCase, EvaluationCounts };
-export { evaluateCase, parseEvaluationCases, summarizeEvaluations };
+export {
+  evaluateCase,
+  hasFailures,
+  onlyFailures,
+  parseEvaluationCases,
+  summarizeEvaluations,
+};

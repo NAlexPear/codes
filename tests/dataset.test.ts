@@ -5,13 +5,105 @@ import test from 'node:test';
 import { buildJevRequest, parseCatalog } from '../src/codes.ts';
 
 const EXPECTED_FIXTURES = 10;
-const EXPECTED_CODES = 33;
+const EXPECTED_CATALOG_CODES = 90;
+const EXPECTED_CORPUS_CODES = 33;
+const EXPECTED_CPT_CODES = 50;
+const EXPECTED_ICD10_CODES = 40;
+const CORE_FAMILIES = [
+  {
+    codes: ['25600', '25605', '25606', '25607', '25608', '25609'],
+    name: 'CPT distal radius treatment',
+    system: 'CPT',
+  },
+  {
+    codes: ['26608', '26615', '26727', '26735'],
+    name: 'CPT hand fracture fixation',
+    system: 'CPT',
+  },
+  {
+    codes: ['20550', '20600', '20605'],
+    name: 'CPT office procedures',
+    system: 'CPT',
+  },
+  {
+    codes: [
+      '26055',
+      '26350',
+      '26356',
+      '26410',
+      '26418',
+      '26433',
+      '26440',
+      '26445',
+    ],
+    name: 'CPT tendon surgery',
+    system: 'CPT',
+  },
+  {
+    codes: [
+      '25215',
+      '25320',
+      '25440',
+      '25447',
+      '25800',
+      '25820',
+      '29840',
+      '29846',
+    ],
+    name: 'CPT wrist reconstruction',
+    system: 'CPT',
+  },
+  {
+    codes: [
+      'G56.01',
+      'G56.02',
+      'M18.11',
+      'M18.12',
+      'M25.531',
+      'M25.532',
+      'M67.431',
+      'M67.432',
+      'M77.11',
+      'M77.12',
+    ],
+    name: 'ICD-10-CM common paired diagnoses',
+    system: 'ICD-10-CM',
+  },
+  {
+    codes: [
+      'M65.311',
+      'M65.312',
+      'M65.321',
+      'M65.322',
+      'M65.331',
+      'M65.332',
+      'M65.341',
+      'M65.342',
+      'M65.351',
+      'M65.352',
+    ],
+    name: 'ICD-10-CM trigger digits',
+    system: 'ICD-10-CM',
+  },
+] as const;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
 const candidateIdentity = (system: string, code: string): string =>
   `${system.toLowerCase()}\u0000${code.toLowerCase()}`;
+
+const assertFamilyCoverage = (
+  identities: ReadonlySet<string>,
+  family: (typeof CORE_FAMILIES)[number],
+): void => {
+  for (const code of family.codes) {
+    assert.ok(
+      identities.has(candidateIdentity(family.system, code)),
+      `${family.name} is missing ${code}`,
+    );
+  }
+};
 
 const fixtureSystem = (fixtureKey: 'cpt' | 'icd10cm'): string => {
   if (fixtureKey === 'cpt') {
@@ -63,8 +155,8 @@ await test('internal catalog covers every fixture candidate and dictation', asyn
     JSON.parse(fixtureSource) as unknown,
   );
   assert.equal(dictations.length, EXPECTED_FIXTURES);
-  assert.equal(catalog.length, EXPECTED_CODES);
-  assert.equal(candidateIdentities.size, EXPECTED_CODES);
+  assert.equal(catalog.length, EXPECTED_CATALOG_CODES);
+  assert.equal(candidateIdentities.size, EXPECTED_CORPUS_CODES);
   const catalogIdentities = new Set(
     catalog.map(({ code, system }) => candidateIdentity(system, code)),
   );
@@ -77,5 +169,21 @@ await test('internal catalog covers every fixture candidate and dictation', asyn
     assert.ok(encoded);
     const request = buildJevRequest(encoded, catalog, 'jev-latest');
     assert.equal(Object.keys(request.questions).length, catalog.length);
+  }
+});
+
+await test('internal catalog covers core hand-surgery code families', async () => {
+  const catalog = parseCatalog(
+    JSON.parse(await readFile('data/billing-codes.json', 'utf8')) as unknown,
+  );
+  const bySystem = Map.groupBy(catalog, ({ system }) => system);
+  const identities = new Set(
+    catalog.map(({ code, system }) => candidateIdentity(system, code)),
+  );
+
+  assert.equal(bySystem.get('CPT')?.length, EXPECTED_CPT_CODES);
+  assert.equal(bySystem.get('ICD-10-CM')?.length, EXPECTED_ICD10_CODES);
+  for (const family of CORE_FAMILIES) {
+    assertFamilyCoverage(identities, family);
   }
 });

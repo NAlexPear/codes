@@ -7,6 +7,8 @@ import type { CaseEvaluation, EvaluationCounts } from './evaluation.ts';
 import { buildJevRequest, parseCatalog } from './codes.ts';
 import {
   evaluateCase,
+  hasFailures,
+  onlyFailures,
   parseEvaluationCases,
   summarizeEvaluations,
 } from './evaluation.ts';
@@ -31,22 +33,6 @@ interface EvalOutput {
   thresholds: typeof THRESHOLDS;
   usage: { inputTokens: number; modelCalls: number };
 }
-
-const isFailure = ({ codes }: CaseEvaluation): boolean =>
-  codes.some(
-    ({ disposition, expected }) =>
-      (expected && disposition === 'omitted') ||
-      (!expected && disposition !== 'omitted'),
-  );
-
-const onlyFailures = ({ codes, id }: CaseEvaluation): CaseEvaluation => ({
-  codes: codes.filter(
-    ({ disposition, expected }) =>
-      (expected && disposition === 'omitted') ||
-      (!expected && disposition !== 'omitted'),
-  ),
-  id,
-});
 
 const run = async (): Promise<EvalOutput> => {
   const [catalogSource, corpusSource] = await Promise.all([
@@ -74,7 +60,7 @@ const run = async (): Promise<EvalOutput> => {
     counts: summarizeEvaluations(evaluations),
     evaluations,
     failures: evaluations
-      .filter((evaluation) => isFailure(evaluation))
+      .filter((evaluation) => hasFailures(evaluation))
       .map((evaluation) => onlyFailures(evaluation)),
     models: [...models],
     thresholds: THRESHOLDS,
