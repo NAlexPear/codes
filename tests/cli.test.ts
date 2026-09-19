@@ -37,5 +37,6 @@ await test('CLI help keeps the internal catalog out of the public interface', as
 
   assert.ifError(result.error);
   assert.match(result.stdout, /^Usage: codes \[--input/u);
+  assert.match(result.stdout, /-s, --stream/u);
   assert.doesNotMatch(result.stdout, /--codes/u);
 });

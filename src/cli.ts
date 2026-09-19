@@ -1,24 +1,29 @@
 #!/usr/bin/env node
 
+import type { Readable } from 'node:stream';
+
+import { createReadStream } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import { createInterface } from 'node:readline';
 import { parseArgs } from 'node:util';
 
-import type { CodeResult, ResultThresholds } from './codes.ts';
+import type { ResultThresholds } from './codes.ts';
+import type { Extract, ExtractionResult } from './extractor.ts';
 
-import { buildJevRequest, parseCatalog, readCodeResults } from './codes.ts';
-import { askJev } from './typesafe.ts';
+import { createExtractor, loadCatalog } from './extractor.ts';
+import { runStream } from './stream.ts';
 
 const ZERO = 0;
 const ONE = 1;
 const JSON_INDENT = 2;
-const CATALOG_URL = new URL('../data/billing-codes.json', import.meta.url);
-const HELP = `Usage: codes [--input <dictation.txt>] [options]
+const HELP = `Usage: codes [--input <dictation.txt>] [--stream] [options]
 
 Scores the internal billing-code catalog against one medical dictation.
 Reads the dictation from stdin when --input is omitted and writes JSON to stdout.
 
 Options:
   --input <path>       Dictation text file (default: stdin)
+  -s, --stream         Read newline-delimited streaming events
   --likelihood <0..1>  Minimum support-or-review probability (default: 0.5)
   --confidence <0..1>  Minimum confidence without review (default: 0.8)
   --model <name>       Jev model or alias (default: jev-latest)
@@ -55,16 +60,27 @@ const readDictation = (path: string | undefined): Promise<string> => {
   return readFile(path, 'utf8');
 };
 
-interface CliOutput {
-  manualReview: CodeResult[];
-  matches: CodeResult[];
-  model: string;
-  thresholds: ResultThresholds;
-  usage: { input_tokens: number; output_tokens: number };
-}
-
-const writeResult = (output: CliOutput): void => {
+const writeResult = (output: ExtractionResult): void => {
   process.stdout.write(`${JSON.stringify(output, undefined, JSON_INDENT)}\n`);
+};
+
+const readLines = (path: string | undefined): AsyncIterable<string> => {
+  let input: Readable = process.stdin;
+  if (path !== undefined) {
+    input = createReadStream(path, 'utf8');
+  }
+  return createInterface({ crlfDelay: Infinity, input });
+};
+
+const configuredExtractor = async (
+  apiKey: string,
+  model: string,
+  thresholds: ResultThresholds,
+): Promise<Extract> =>
+  createExtractor({ apiKey, catalog: await loadCatalog(), model, thresholds });
+
+const writeStreamResult = (output: object): void => {
+  process.stdout.write(`${JSON.stringify(output)}\n`);
 };
 
 const main = async (): Promise<void> => {
@@ -75,6 +91,7 @@ const main = async (): Promise<void> => {
       input: { type: 'string' },
       likelihood: { default: '0.5', type: 'string' },
       model: { default: 'jev-latest', type: 'string' },
+      stream: { short: 's', type: 'boolean' },
     },
     strict: true,
   });
@@ -86,23 +103,19 @@ const main = async (): Promise<void> => {
     confidence: parseThreshold(values.confidence, '--confidence'),
     likelihood: parseThreshold(values.likelihood, '--likelihood'),
   };
-  const [catalogText, dictation] = await Promise.all([
-    readFile(CATALOG_URL, 'utf8'),
-    readDictation(values.input),
-  ]);
-  const catalog = parseCatalog(JSON.parse(catalogText) as unknown);
-  const request = buildJevRequest(dictation, catalog, values.model);
-  const response = await askJev(request, {
-    apiKey: process.env['TYPESAFE_API_KEY'] ?? '',
-  });
-  const results = readCodeResults(response, catalog, thresholds);
-  writeResult({
-    manualReview: results.filter(({ needsManualReview }) => needsManualReview),
-    matches: results.filter(({ needsManualReview }) => !needsManualReview),
-    model: response.model,
+  const extract = await configuredExtractor(
+    process.env['TYPESAFE_API_KEY'] ?? '',
+    values.model,
     thresholds,
-    usage: response.usage,
-  });
+  );
+  if (values.stream === true) {
+    await runStream(readLines(values.input), {
+      extract,
+      output: writeStreamResult,
+    });
+    return;
+  }
+  writeResult(await extract(await readDictation(values.input)));
 };
 
 try {
