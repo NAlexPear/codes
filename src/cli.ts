@@ -9,21 +9,30 @@ import { parseArgs } from 'node:util';
 
 import type { ResultThresholds } from './codes.ts';
 import type { Extract, ExtractionResult } from './extractor.ts';
+import type { Loader } from './loader.ts';
+import type { OutputMode } from './output.ts';
+import type { StreamSnapshot } from './stream.ts';
 
 import { createExtractor, loadCatalog } from './extractor.ts';
+import { createLoader } from './loader.ts';
+import {
+  formatBatchOutput,
+  formatStreamOutput,
+  parseOutputMode,
+} from './output.ts';
 import { runStream } from './stream.ts';
 
 const ZERO = 0;
 const ONE = 1;
-const JSON_INDENT = 2;
 const HELP = `Usage: codes [--input <dictation.txt>] [--stream] [options]
 
 Scores the internal billing-code catalog against one medical dictation.
-Reads the dictation from stdin when --input is omitted and writes JSON to stdout.
+Reads the dictation from stdin when --input is omitted.
 
 Options:
   --input <path>       Dictation text file (default: stdin)
   -s, --stream         Read newline-delimited streaming events
+  -o, --output <mode>  Output: human (default) or json
   --likelihood <0..1>  Minimum support-or-review probability (default: 0.5)
   --confidence <0..1>  Minimum confidence without review (default: 0.8)
   --model <name>       Jev model or alias (default: jev-latest)
@@ -60,8 +69,8 @@ const readDictation = (path: string | undefined): Promise<string> => {
   return readFile(path, 'utf8');
 };
 
-const writeResult = (output: ExtractionResult): void => {
-  process.stdout.write(`${JSON.stringify(output, undefined, JSON_INDENT)}\n`);
+const writeBatchResult = (result: ExtractionResult, mode: OutputMode): void => {
+  process.stdout.write(`${formatBatchOutput(result, mode)}\n`);
 };
 
 const readLines = (path: string | undefined): AsyncIterable<string> => {
@@ -79,8 +88,46 @@ const configuredExtractor = async (
 ): Promise<Extract> =>
   createExtractor({ apiKey, catalog: await loadCatalog(), model, thresholds });
 
-const writeStreamResult = (output: object): void => {
-  process.stdout.write(`${JSON.stringify(output)}\n`);
+const streamWriter = (mode: OutputMode): ((result: StreamSnapshot) => void) => {
+  let first = true;
+  return (result): void => {
+    if (mode === 'json') {
+      process.stdout.write(`${formatStreamOutput(result, mode)}\n`);
+      return;
+    }
+    if (!first) {
+      process.stdout.write('\n');
+    }
+    process.stdout.write(`${formatStreamOutput(result, mode)}\n`);
+    first = false;
+  };
+};
+
+const withLoader =
+  (extract: Extract, loader: Loader): Extract =>
+  async (dictation) => {
+    loader.start();
+    try {
+      return await extract(dictation);
+    } finally {
+      loader.stop();
+    }
+  };
+
+const loaderFor = (mode: OutputMode): Loader =>
+  createLoader(
+    process.stderr,
+    'Analyzing dictation…',
+    mode === 'human' && process.stderr.isTTY,
+  );
+
+const runBatch = async (
+  extract: Extract,
+  input: string | undefined,
+  mode: OutputMode,
+): Promise<void> => {
+  const result = await extract(await readDictation(input));
+  writeBatchResult(result, mode);
 };
 
 const main = async (): Promise<void> => {
@@ -91,6 +138,7 @@ const main = async (): Promise<void> => {
       input: { type: 'string' },
       likelihood: { default: '0.5', type: 'string' },
       model: { default: 'jev-latest', type: 'string' },
+      output: { default: 'human', short: 'o', type: 'string' },
       stream: { short: 's', type: 'boolean' },
     },
     strict: true,
@@ -103,19 +151,21 @@ const main = async (): Promise<void> => {
     confidence: parseThreshold(values.confidence, '--confidence'),
     likelihood: parseThreshold(values.likelihood, '--likelihood'),
   };
-  const extract = await configuredExtractor(
+  const mode = parseOutputMode(values.output);
+  const configured = await configuredExtractor(
     process.env['TYPESAFE_API_KEY'] ?? '',
     values.model,
     thresholds,
   );
+  const extract = withLoader(configured, loaderFor(mode));
   if (values.stream === true) {
     await runStream(readLines(values.input), {
       extract,
-      output: writeStreamResult,
+      output: streamWriter(mode),
     });
     return;
   }
-  writeResult(await extract(await readDictation(values.input)));
+  await runBatch(extract, values.input, mode);
 };
 
 try {

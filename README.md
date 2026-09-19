@@ -12,6 +12,13 @@ pnpm start --input dictation.txt
 cat dictation.txt | pnpm start
 ```
 
+The default output is formatted for people and shows an interactive loader when
+run in a terminal. Use `--output json` or `-o json` for pretty-printed JSON:
+
+```sh
+pnpm start --input dictation.txt --output json
+```
+
 ### Real-time dictation
 
 Pass `--stream` (or `-s`) to read newline-delimited JSON (NDJSON) events from
@@ -34,7 +41,8 @@ dictation. A standalone finalized transcript event containing
 included in the medical transcript. Interim events and longer sentences
 containing those words do not trigger termination.
 
-The CLI writes complete code snapshots as NDJSON. Provisional snapshots have
+The default stream output is human-readable. With `--output json`, the CLI
+writes complete code snapshots as NDJSON. Provisional snapshots have
 `"final":false`; the last snapshot has `"final":true` and a `termination`
 object. Extraction is debounced, only one request runs at a time, and stale
 results are suppressed when a newer transcript revision arrives.

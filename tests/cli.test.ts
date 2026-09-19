@@ -38,5 +38,24 @@ await test('CLI help keeps the internal catalog out of the public interface', as
   assert.ifError(result.error);
   assert.match(result.stdout, /^Usage: codes \[--input/u);
   assert.match(result.stdout, /-s, --stream/u);
+  assert.match(result.stdout, /-o, --output <mode>/u);
   assert.doesNotMatch(result.stdout, /--codes/u);
+});
+
+await test('CLI rejects unknown output modes before extraction', async () => {
+  const result = await new Promise<{
+    error: ExecFileException | null;
+    stderr: string;
+  }>((resolve) => {
+    execFile(
+      process.execPath,
+      ['src/cli.ts', '--output', 'yaml'],
+      (error, _stdout, stderr) => {
+        resolve({ error, stderr });
+      },
+    );
+  });
+
+  assert.ok(result.error);
+  assert.match(result.stderr, /--output must be human or json/u);
 });
