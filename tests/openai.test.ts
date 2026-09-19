@@ -134,3 +134,26 @@ await test('askOpenAI rejects incomplete candidate decisions', async () => {
     /invalid billing-code decisions/u,
   );
 });
+
+await test('askOpenAI honors retry-after for rate limits', async () => {
+  let calls = 0;
+  const result = await askOpenAI(request, {
+    apiKey: 'secret-for-test',
+    fetch: () => {
+      calls += 1;
+      if (calls === 1) {
+        return Promise.resolve(
+          new Response('rate limited', {
+            headers: { 'retry-after': '0' },
+            status: 429,
+          }),
+        );
+      }
+      return Promise.resolve(successfulResponse());
+    },
+    maxAttempts: 2,
+  });
+
+  assert.equal(calls, 2);
+  assert.equal(result.model, 'openai-resolved-model');
+});

@@ -9,7 +9,10 @@ const FIRST_ATTEMPT = 1;
 const DEFAULT_ATTEMPTS = 3;
 const DEFAULT_TIMEOUT_MS = 120_000;
 const BASE_RETRY_DELAY_MS = 500;
+const BACKOFF_FACTOR = 2;
 const ERROR_DETAIL_LIMIT = 1_000;
+const MAX_RETRY_DELAY_MS = 30_000;
+const MILLISECONDS_PER_SECOND = 1_000;
 const RATE_LIMITED = 429;
 const SERVER_ERROR = 500;
 const DEFAULT_ENDPOINT = 'https://api.openai.com/v1/responses';
@@ -233,6 +236,20 @@ const apiError = async (response: Response): Promise<Error> => {
   return new Error(`OpenAI API returned HTTP ${response.status}${suffix}`);
 };
 
+const retryDelayMs = (retryAfter: string | null, attempt: number): number => {
+  if (retryAfter !== null) {
+    const seconds = Number(retryAfter);
+    if (Number.isFinite(seconds) && seconds >= ZERO) {
+      return Math.min(seconds * MILLISECONDS_PER_SECOND, MAX_RETRY_DELAY_MS);
+    }
+    const date = Date.parse(retryAfter);
+    if (Number.isFinite(date)) {
+      return Math.max(ZERO, Math.min(date - Date.now(), MAX_RETRY_DELAY_MS));
+    }
+  }
+  return BASE_RETRY_DELAY_MS * BACKOFF_FACTOR ** (attempt - FIRST_ATTEMPT);
+};
+
 const candidateIds = (request: OpenAIRequest): string[] => {
   const { properties } = request.text.format.schema;
   if (!isRecord(properties)) {
@@ -264,7 +281,7 @@ const askOpenAI = async (
     if (!retryable || attempt === options.maxAttempts) {
       throw await apiError(response);
     }
-    await sleep(BASE_RETRY_DELAY_MS * attempt);
+    await sleep(retryDelayMs(response.headers.get('retry-after'), attempt));
   }
   throw new Error('OpenAI request exhausted its retry attempts.');
 };
