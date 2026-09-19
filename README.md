@@ -41,7 +41,7 @@ Run the labeled synthetic corpus against Jev separately from the deterministic
 unit suite:
 
 ```sh
-TYPESAFE_API_KEY=... pnpm eval:jev
+TYPESAFE_API_KEY=... pnpm eval
 ```
 
 The eval exits unsuccessfully when an expected code is omitted or an unexpected

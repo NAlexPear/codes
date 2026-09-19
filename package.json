@@ -9,7 +9,7 @@
   "type": "module",
   "scripts": {
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
-    "eval:jev": "node src/eval.ts",
+    "eval": "node src/eval.ts",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint .",
