@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
+echo "Checking Node.js toolchain..."
+command -v node >/dev/null 2>&1 || {
+  echo "Node.js is required but was not found." >&2
+  exit 1
+}
+command -v npm >/dev/null 2>&1 || {
+  echo "npm is required but was not found." >&2
+  exit 1
+}
+
+node_major="$(node -p 'process.versions.node.split(".")[0]')"
+if ((node_major < 24)); then
+  echo "Node.js 24 or newer is required; found $(node --version)." >&2
+  exit 1
+fi
+
+echo "Using Node.js $(node --version) and npm $(npm --version)."
+
+if [[ -f package-lock.json ]]; then
+  echo "Installing npm dependencies from package-lock.json..."
+  npm ci --no-audit --no-fund
+elif [[ -f package.json ]]; then
+  echo "package.json exists without package-lock.json; commit a lockfile for reproducible setup." >&2
+  exit 1
+else
+  echo "No Node.js package manifest yet; dependency installation skipped."
+fi
+
+echo "Setup complete."
