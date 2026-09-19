@@ -16,7 +16,10 @@ export default defineConfig({
   options: { denyWarnings: true, typeAware: true, typeCheck: true },
   overrides: [
     { files: ['*.config.ts'], rules: { 'import/no-default-export': 'off' } },
-    { files: ['src/cli.ts'], rules: { 'node/no-process-env': 'off' } },
+    {
+      files: ['src/cli.ts', 'src/eval.ts'],
+      rules: { 'eslint/no-await-in-loop': 'off', 'node/no-process-env': 'off' },
+    },
     { files: ['src/typesafe.ts'], rules: { 'eslint/no-await-in-loop': 'off' } },
     {
       files: ['tests/**/*.ts'],

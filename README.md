@@ -37,6 +37,18 @@ pnpm check
 linting, strict TypeScript checks, and tests. Unit tests use only Node's
 built-in `node:test` and `node:assert/strict` modules.
 
+Run the labeled synthetic corpus against Jev separately from the deterministic
+unit suite:
+
+```sh
+TYPESAFE_API_KEY=... pnpm eval:jev
+```
+
+The eval exits unsuccessfully when an expected code is omitted or an unexpected
+code is returned. Its JSON output separates automatic matches, manual-review
+matches, and omitted candidates. It retains each candidate's full probability
+distribution so model or prompt changes can be compared.
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).

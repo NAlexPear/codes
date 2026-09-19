@@ -178,7 +178,7 @@ const resultForCandidate = (
   };
 };
 
-const readCodeResults = (
+const readAllCodeResults = (
   response: JevResponse,
   catalog: readonly BillingCode[],
   thresholds: ResultThresholds,
@@ -191,6 +191,14 @@ const readCodeResults = (
         thresholds.confidence,
       );
     })
+    .toSorted((left, right) => right.likelihood - left.likelihood);
+
+const readCodeResults = (
+  response: JevResponse,
+  catalog: readonly BillingCode[],
+  thresholds: ResultThresholds,
+): CodeResult[] =>
+  readAllCodeResults(response, catalog, thresholds)
     .filter(({ likelihood }) => likelihood >= thresholds.likelihood)
     .toSorted((left, right) => right.likelihood - left.likelihood);
 
@@ -201,4 +209,4 @@ export type {
   JevResponse,
   ResultThresholds,
 };
-export { buildJevRequest, parseCatalog, readCodeResults };
+export { buildJevRequest, parseCatalog, readAllCodeResults, readCodeResults };
