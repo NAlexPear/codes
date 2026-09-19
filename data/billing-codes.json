@@ -147,7 +147,8 @@
   {
     "system": "ICD-10-CM",
     "code": "S63.592A",
-    "description": "Other specified sprain of left wrist, initial encounter"
+    "description": "Other specified sprain of left wrist, initial encounter",
+    "guidance": "A documented left TFCC tear can make this candidate plausible. Choose needs_review when the dictation does not establish whether the tear is traumatic or degenerative."
   },
   {
     "system": "ICD-10-CM",

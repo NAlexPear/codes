@@ -37,8 +37,12 @@ interface ResolvedOptions {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
-const isChoice = (value: unknown): value is 'supported' | 'not_supported' =>
-  value === 'supported' || value === 'not_supported';
+const isChoice = (
+  value: unknown,
+): value is 'needs_review' | 'not_supported' | 'supported' =>
+  value === 'supported' ||
+  value === 'needs_review' ||
+  value === 'not_supported';
 
 const isInteger = (value: unknown): value is number =>
   typeof value === 'number' && Number.isInteger(value);
@@ -48,12 +52,17 @@ const parseChoiceAnswer = (value: unknown): JevResponse['answers'][string] => {
     throw new Error('TypeSafe API returned an invalid answer.');
   }
   const { choice, confidence } = value;
-  const { not_supported: notSupported, supported } = value['probabilities'];
+  const {
+    needs_review: needsReview,
+    not_supported: notSupported,
+    supported,
+  } = value['probabilities'];
   if (
     value['type'] !== 'choice' ||
     !isChoice(choice) ||
     typeof confidence !== 'number' ||
     typeof supported !== 'number' ||
+    typeof needsReview !== 'number' ||
     typeof notSupported !== 'number'
   ) {
     throw new Error('TypeSafe API returned an invalid answer.');
@@ -61,7 +70,11 @@ const parseChoiceAnswer = (value: unknown): JevResponse['answers'][string] => {
   return {
     choice,
     confidence,
-    probabilities: { not_supported: notSupported, supported },
+    probabilities: {
+      needs_review: needsReview,
+      not_supported: notSupported,
+      supported,
+    },
     type: 'choice',
   };
 };

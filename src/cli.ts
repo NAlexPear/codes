@@ -19,7 +19,7 @@ Reads the dictation from stdin when --input is omitted and writes JSON to stdout
 
 Options:
   --input <path>       Dictation text file (default: stdin)
-  --likelihood <0..1>  Minimum supported probability (default: 0.5)
+  --likelihood <0..1>  Minimum support-or-review probability (default: 0.5)
   --confidence <0..1>  Minimum confidence without review (default: 0.8)
   --model <name>       Jev model or alias (default: jev-latest)
   --help               Show this help

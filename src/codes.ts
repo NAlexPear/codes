@@ -1,29 +1,24 @@
+import type { BillingCode, ChoiceQuestion } from './questions.ts';
+
+import { buildQuestions } from './questions.ts';
+
 const ZERO = 0;
 const ONE = 1;
-const PROBABILITY_TOLERANCE = 0.001;
-
-interface BillingCode {
-  code: string;
-  description: string;
-  guidance?: string;
-  system: string;
-}
+const PROBABILITY_TOLERANCE = 0.02;
 
 type CodeResult = BillingCode & {
   confidence: number;
   likelihood: number;
   needsManualReview: boolean;
-  probabilities: { not_supported: number; supported: number };
+  probabilities: {
+    needs_review: number;
+    not_supported: number;
+    supported: number;
+  };
 };
 
-interface ChoiceQuestion {
-  criteria: { not_supported: string; supported: string };
-  instructions: { candidate: BillingCode; rules: string[]; task: string };
-  type: 'choice';
-}
-
 interface ChoiceAnswer {
-  choice: 'supported' | 'not_supported';
+  choice: 'needs_review' | 'not_supported' | 'supported';
   confidence: number;
   probabilities: Record<string, number>;
   type: 'choice';
@@ -124,30 +119,7 @@ const buildJevRequest = (
     throw new Error('The dictation is empty.');
   }
 
-  const questions = Object.fromEntries(
-    catalog.map((candidate, index) => [
-      questionId(index),
-      {
-        criteria: {
-          not_supported:
-            'The candidate is absent, historical, planned, ruled out, contradicted, or lacks required specificity.',
-          supported:
-            'The current encounter explicitly documents the candidate with the specificity needed to support it.',
-        },
-        instructions: {
-          candidate,
-          rules: [
-            'Judge only the candidate shown in this question.',
-            'Require documentation of the diagnosis, service, or procedure represented by the candidate.',
-            'Do not infer undocumented details such as laterality, approach, extent, or complications.',
-            'A mention in history, a planned future service, or a ruled-out diagnosis is not support for coding the current encounter.',
-          ],
-          task: 'Choose whether the dictation explicitly supports this billing code candidate.',
-        },
-        type: 'choice' as const,
-      },
-    ]),
-  );
+  const questions = buildQuestions(catalog);
   return { model, questions, state: { dictation } };
 };
 
@@ -157,14 +129,17 @@ const resultForCandidate = (
 ): CodeResult => {
   const { answer, candidate, id } = candidateAnswer;
   const supported = answer?.probabilities['supported'];
+  const needsReview = answer?.probabilities['needs_review'];
   const notSupported = answer?.probabilities['not_supported'];
   if (
     answer?.type !== 'choice' ||
-    !['supported', 'not_supported'].includes(answer.choice) ||
+    !['supported', 'needs_review', 'not_supported'].includes(answer.choice) ||
     !isProbability(supported) ||
+    !isProbability(needsReview) ||
     !isProbability(notSupported) ||
     !isProbability(answer.confidence) ||
-    Math.abs(supported + notSupported - ONE) > PROBABILITY_TOLERANCE
+    Math.abs(supported + needsReview + notSupported - ONE) >
+      PROBABILITY_TOLERANCE
   ) {
     throw new Error(`Jev returned an invalid answer for ${id}.`);
   }
@@ -172,9 +147,16 @@ const resultForCandidate = (
   return {
     ...candidate,
     confidence: answer.confidence,
-    likelihood: supported,
-    needsManualReview: answer.confidence < confidenceThreshold,
-    probabilities: { not_supported: notSupported, supported },
+    likelihood: supported + needsReview,
+    needsManualReview:
+      answer.choice !== 'supported' ||
+      (answer.confidence < confidenceThreshold &&
+        supported < confidenceThreshold),
+    probabilities: {
+      needs_review: needsReview,
+      not_supported: notSupported,
+      supported,
+    },
   };
 };
 
@@ -202,11 +184,6 @@ const readCodeResults = (
     .filter(({ likelihood }) => likelihood >= thresholds.likelihood)
     .toSorted((left, right) => right.likelihood - left.likelihood);
 
-export type {
-  BillingCode,
-  CodeResult,
-  JevRequest,
-  JevResponse,
-  ResultThresholds,
-};
+export type { BillingCode } from './questions.ts';
+export type { CodeResult, JevRequest, JevResponse, ResultThresholds };
 export { buildJevRequest, parseCatalog, readAllCodeResults, readCodeResults };

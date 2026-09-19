@@ -19,7 +19,11 @@ const successfulResponse = (): Response =>
       candidate_0: {
         choice: 'supported',
         confidence: 0.75,
-        probabilities: { not_supported: 0.2, supported: SUCCESS_PROBABILITY },
+        probabilities: {
+          needs_review: 0,
+          not_supported: 0.2,
+          supported: SUCCESS_PROBABILITY,
+        },
         type: 'choice',
       },
     },

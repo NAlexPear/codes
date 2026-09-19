@@ -25,7 +25,7 @@ const answer = (
   return {
     choice,
     confidence,
-    probabilities: { not_supported: 1 - supported, supported },
+    probabilities: { needs_review: 0, not_supported: 1 - supported, supported },
     type: 'choice',
   };
 };
