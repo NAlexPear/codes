@@ -7,6 +7,7 @@ export default defineConfig({
   embeddedLanguageFormatting: 'auto',
   endOfLine: 'lf',
   htmlWhitespaceSensitivity: 'strict',
+  ignorePatterns: ['.agents/skills/**'],
   insertFinalNewline: true,
   jsdoc: {
     addDefaultToDescription: true,

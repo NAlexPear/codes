@@ -1,100 +1,115 @@
-import assert from "node:assert/strict";
-import test from "node:test";
+import assert from 'node:assert/strict';
+import test from 'node:test';
+
+import type { JevResponse } from '../src/codes.ts';
+
 import {
   buildJevRequest,
   parseCatalog,
   readCodeResults,
-  type JevResponse,
-} from "../src/codes.ts";
+} from '../src/codes.ts';
 
 const catalog = parseCatalog([
   {
-    code: "CODE-A",
-    system: "TEST",
-    description: "A documented current procedure",
+    code: 'CODE-A',
+    description: 'A documented current procedure',
+    system: 'TEST',
   },
   {
-    code: "CODE-B",
-    system: "TEST",
-    description: "A different current procedure",
-    guidance: "Requires explicit laterality",
+    code: 'CODE-B',
+    description: 'A different current procedure',
+    guidance: 'Requires explicit laterality',
+    system: 'TEST',
   },
 ]);
 
-test("buildJevRequest creates independent binary Choice questions for all candidates", () => {
-  const request = buildJevRequest("Procedure A was performed.", catalog, "jev-latest");
+await test('buildJevRequest creates independent binary Choice questions for all candidates', () => {
+  const request = buildJevRequest(
+    'Procedure A was performed.',
+    catalog,
+    'jev-latest',
+  );
+  const firstQuestion = request.questions['candidate_0'];
+  const secondQuestion = request.questions['candidate_1'];
 
-  assert.deepEqual(request.state, { dictation: "Procedure A was performed." });
-  assert.equal(request.questions.candidate_0.type, "choice");
+  assert.deepEqual(request.state, { dictation: 'Procedure A was performed.' });
+  assert.ok(firstQuestion);
+  assert.ok(secondQuestion);
+  assert.equal(firstQuestion.type, 'choice');
   assert.equal(
-    request.questions.candidate_1.instructions.candidate.guidance,
-    "Requires explicit laterality",
+    secondQuestion.instructions.candidate.guidance,
+    'Requires explicit laterality',
   );
   assert.match(
-    request.questions.candidate_0.criteria.not_supported,
-    /historical, planned, ruled out/,
+    firstQuestion.criteria.not_supported,
+    /historical, planned, ruled out/u,
   );
 });
 
-test("readCodeResults keeps likely codes, flags low confidence, and sorts", () => {
+await test('readCodeResults keeps likely codes, flags low confidence, and sorts', () => {
   const response: JevResponse = {
-    model: "jev-1.13.0",
     answers: {
       candidate_0: {
-        type: "choice",
-        choice: "supported",
-        probabilities: { supported: 0.5, not_supported: 0.5 },
+        choice: 'supported',
         confidence: 0.4,
+        probabilities: { not_supported: 0.5, supported: 0.5 },
+        type: 'choice',
       },
       candidate_1: {
-        type: "choice",
-        choice: "supported",
-        probabilities: { supported: 0.91, not_supported: 0.09 },
+        choice: 'supported',
         confidence: 0.9,
+        probabilities: { not_supported: 0.09, supported: 0.91 },
+        type: 'choice',
       },
     },
+    model: 'jev-1.13.0',
     usage: { input_tokens: 10, output_tokens: 2 },
   };
 
   assert.deepEqual(
-    readCodeResults(response, catalog, 0.5, 0.8).map(
-      ({ code, likelihood, needsManualReview }) => ({
-        code,
-        likelihood,
-        needsManualReview,
-      }),
-    ),
+    readCodeResults(response, catalog, {
+      confidence: 0.8,
+      likelihood: 0.5,
+    }).map(({ code, likelihood, needsManualReview }) => ({
+      code,
+      likelihood,
+      needsManualReview,
+    })),
     [
-      { code: "CODE-B", likelihood: 0.91, needsManualReview: false },
-      { code: "CODE-A", likelihood: 0.5, needsManualReview: true },
+      { code: 'CODE-B', likelihood: 0.91, needsManualReview: false },
+      { code: 'CODE-A', likelihood: 0.5, needsManualReview: true },
     ],
   );
 });
 
-test("parseCatalog rejects duplicate system and code identities", () => {
+await test('parseCatalog rejects duplicate system and code identities', () => {
   assert.throws(
     () =>
       parseCatalog([
-        { code: "123", system: "CPT", description: "First" },
-        { code: "123", system: "cpt", description: "Second" },
+        { code: '123', description: 'First', system: 'CPT' },
+        { code: '123', description: 'Second', system: 'cpt' },
       ]),
-    /Duplicate code catalog entry: cpt 123/,
+    /Duplicate code catalog entry: cpt 123/u,
   );
 });
 
-test("readCodeResults rejects missing or out-of-range answers", () => {
+await test('readCodeResults rejects missing or out-of-range answers', () => {
   const response: JevResponse = {
-    model: "jev-1.13.0",
     answers: {
       candidate_0: {
-        type: "choice",
-        choice: "supported",
-        probabilities: { supported: 1.1, not_supported: 0 },
+        choice: 'supported',
         confidence: 1,
+        probabilities: { not_supported: 0, supported: 1.1 },
+        type: 'choice',
       },
     },
+    model: 'jev-1.13.0',
     usage: { input_tokens: 10, output_tokens: 2 },
   };
 
-  assert.throws(() => readCodeResults(response, catalog, 0.5, 0.8), /candidate_0/);
+  assert.throws(
+    () =>
+      readCodeResults(response, catalog, { confidence: 0.8, likelihood: 0.5 }),
+    /candidate_0/u,
+  );
 });

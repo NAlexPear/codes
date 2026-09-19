@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 
-import { readFile } from "node:fs/promises";
-import { parseArgs } from "node:util";
-import {
-  buildJevRequest,
-  parseCatalog,
-  readCodeResults,
-} from "./codes.ts";
-import { askJev } from "./typesafe.ts";
+import { readFile } from 'node:fs/promises';
+import { parseArgs } from 'node:util';
 
+import type { CodeResult, ResultThresholds } from './codes.ts';
+
+import { buildJevRequest, parseCatalog, readCodeResults } from './codes.ts';
+import { askJev } from './typesafe.ts';
+
+const ZERO = 0;
+const ONE = 1;
+const JSON_INDENT = 2;
 const HELP = `Usage: codes --codes <catalog.json> [--input <dictation.txt>] [options]
 
 Scores a bounded catalog of billing-code candidates against one medical dictation.
@@ -29,85 +31,91 @@ The dictation is sent to TypeSafe. Do not send protected health information unle
 your organization's TypeSafe agreement and workflow permit it. This is coding
 decision support, not an autonomous billing decision.`;
 
-async function main(): Promise<void> {
-  const { values } = parseArgs({
-    options: {
-      codes: { type: "string" },
-      input: { type: "string" },
-      likelihood: { type: "string", default: "0.5" },
-      confidence: { type: "string", default: "0.8" },
-      model: { type: "string", default: "jev-latest" },
-      help: { type: "boolean", short: "h" },
-    },
-    strict: true,
-  });
-
-  if (values.help) {
-    console.log(HELP);
-    return;
-  }
-  if (values.codes === undefined) {
-    throw new Error("--codes is required. Run with --help for usage.");
-  }
-
-  const likelihoodThreshold = parseThreshold(values.likelihood, "--likelihood");
-  const confidenceThreshold = parseThreshold(values.confidence, "--confidence");
-
-  const [catalogText, dictation] = await Promise.all([
-    readFile(values.codes, "utf8"),
-    values.input === undefined
-      ? readStdin()
-      : readFile(values.input, "utf8"),
-  ]);
-  const catalog = parseCatalog(JSON.parse(catalogText) as unknown);
-  const request = buildJevRequest(dictation, catalog, values.model);
-  const response = await askJev(request, {
-    apiKey: process.env.TYPESAFE_API_KEY ?? "",
-  });
-  const results = readCodeResults(
-    response,
-    catalog,
-    likelihoodThreshold,
-    confidenceThreshold,
-  );
-
-  console.log(
-    JSON.stringify(
-      {
-        model: response.model,
-        thresholds: {
-          likelihood: likelihoodThreshold,
-          confidence: confidenceThreshold,
-        },
-        matches: results.filter(({ needsManualReview }) => !needsManualReview),
-        manualReview: results.filter(({ needsManualReview }) => needsManualReview),
-        usage: response.usage,
-      },
-      null,
-      2,
-    ),
-  );
-}
-
-async function readStdin(): Promise<string> {
-  process.stdin.setEncoding("utf8");
-  let input = "";
+const readStdin = async (): Promise<string> => {
+  process.stdin.setEncoding('utf8');
+  let input = '';
   for await (const chunk of process.stdin) {
     input += chunk;
   }
   return input;
-}
+};
 
-function parseThreshold(value: string, name: string): number {
+const parseThreshold = (value: string, name: string): number => {
   const threshold = Number(value);
-  if (!Number.isFinite(threshold) || threshold < 0 || threshold > 1) {
+  if (!Number.isFinite(threshold) || threshold < ZERO || threshold > ONE) {
     throw new Error(`${name} must be a number from 0 to 1.`);
   }
   return threshold;
+};
+
+const readDictation = (path: string | undefined): Promise<string> => {
+  if (path === undefined) {
+    return readStdin();
+  }
+  return readFile(path, 'utf8');
+};
+
+interface CliOutput {
+  manualReview: CodeResult[];
+  matches: CodeResult[];
+  model: string;
+  thresholds: ResultThresholds;
+  usage: { input_tokens: number; output_tokens: number };
 }
 
-main().catch((error: unknown) => {
-  const message = error instanceof Error ? error.message : String(error);
-  console.error(`codes: ${message}`);
-  process.exitCode = 1;
-});
+const writeResult = (output: CliOutput): void => {
+  process.stdout.write(`${JSON.stringify(output, undefined, JSON_INDENT)}\n`);
+};
+
+const main = async (): Promise<void> => {
+  const { values } = parseArgs({
+    options: {
+      codes: { type: 'string' },
+      confidence: { default: '0.8', type: 'string' },
+      help: { short: 'h', type: 'boolean' },
+      input: { type: 'string' },
+      likelihood: { default: '0.5', type: 'string' },
+      model: { default: 'jev-latest', type: 'string' },
+    },
+    strict: true,
+  });
+  if (values.help === true) {
+    process.stdout.write(`${HELP}\n`);
+    return;
+  }
+  if (values.codes === undefined) {
+    throw new Error('--codes is required. Run with --help for usage.');
+  }
+  const thresholds = {
+    confidence: parseThreshold(values.confidence, '--confidence'),
+    likelihood: parseThreshold(values.likelihood, '--likelihood'),
+  };
+  const [catalogText, dictation] = await Promise.all([
+    readFile(values.codes, 'utf8'),
+    readDictation(values.input),
+  ]);
+  const catalog = parseCatalog(JSON.parse(catalogText) as unknown);
+  const request = buildJevRequest(dictation, catalog, values.model);
+  const response = await askJev(request, {
+    apiKey: process.env['TYPESAFE_API_KEY'] ?? '',
+  });
+  const results = readCodeResults(response, catalog, thresholds);
+  writeResult({
+    manualReview: results.filter(({ needsManualReview }) => needsManualReview),
+    matches: results.filter(({ needsManualReview }) => !needsManualReview),
+    model: response.model,
+    thresholds,
+    usage: response.usage,
+  });
+};
+
+try {
+  await main();
+} catch (error: unknown) {
+  let message = String(error);
+  if (error instanceof Error) {
+    ({ message } = error);
+  }
+  process.stderr.write(`codes: ${message}\n`);
+  process.exitCode = ONE;
+}

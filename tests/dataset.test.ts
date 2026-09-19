@@ -1,49 +1,61 @@
-import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
-import test from "node:test";
-import { buildJevRequest, parseCatalog } from "../src/codes.ts";
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import test from 'node:test';
 
-type Candidate = {
-  code: string;
-  label: string;
-};
+import type { BillingCode } from '../src/codes.ts';
 
-type DictationFixture = {
-  dictation: unknown;
-  billing_candidates: {
-    cpt: Candidate[];
-    icd10cm: Candidate[];
-  };
-};
+import { buildJevRequest, parseCatalog } from '../src/codes.ts';
 
-test("all fixture dictations can be evaluated against the combined candidate catalog", async () => {
-  const fixtures = JSON.parse(
-    await readFile("data/hand-surgery-dictations.json", "utf8"),
-  ) as DictationFixture[];
-  const unique = new Map<string, { code: string; system: string; description: string }>();
+const EXPECTED_FIXTURES = 10;
+const EXPECTED_CODES = 33;
 
-  for (const fixture of fixtures) {
-    for (const system of ["cpt", "icd10cm"] as const) {
-      for (const candidate of fixture.billing_candidates[system]) {
-        unique.set(`${system}:${candidate.code}`, {
-          code: candidate.code,
-          system,
-          description: candidate.label,
-        });
-      }
-    }
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const addCandidates = (
+  billing: Record<string, unknown>,
+  system: string,
+  unique: Map<string, BillingCode>,
+): void => {
+  const candidates = billing[system];
+  assert.ok(Array.isArray(candidates));
+  for (const candidate of candidates) {
+    assert.ok(isRecord(candidate));
+    const { code, label } = candidate;
+    assert.ok(typeof code === 'string');
+    assert.ok(typeof label === 'string');
+    unique.set(`${system}:${code}`, { code, description: label, system });
   }
+};
 
-  const catalog = parseCatalog([...unique.values()]);
-  assert.equal(fixtures.length, 10);
-  assert.equal(catalog.length, 33);
+const readFixtures = (
+  value: unknown,
+): { catalog: BillingCode[]; dictations: unknown[] } => {
+  assert.ok(Array.isArray(value));
+  const dictations: unknown[] = [];
+  const unique = new Map<string, BillingCode>();
+  for (const fixture of value) {
+    assert.ok(isRecord(fixture));
+    const billing = fixture['billing_candidates'];
+    assert.ok(isRecord(billing));
+    dictations.push(fixture['dictation']);
+    addCandidates(billing, 'cpt', unique);
+    addCandidates(billing, 'icd10cm', unique);
+  }
+  return { catalog: parseCatalog([...unique.values()]), dictations };
+};
 
-  for (const fixture of fixtures) {
-    const request = buildJevRequest(
-      JSON.stringify(fixture.dictation),
-      catalog,
-      "jev-latest",
-    );
+await test('all fixture dictations can be evaluated against the combined candidate catalog', async () => {
+  const source = await readFile('data/hand-surgery-dictations.json', 'utf8');
+  const value: unknown = JSON.parse(source);
+  const { catalog, dictations } = readFixtures(value);
+  assert.equal(dictations.length, EXPECTED_FIXTURES);
+  assert.equal(catalog.length, EXPECTED_CODES);
+
+  for (const dictation of dictations) {
+    const encoded = JSON.stringify(dictation);
+    assert.ok(encoded);
+    const request = buildJevRequest(encoded, catalog, 'jev-latest');
     assert.equal(Object.keys(request.questions).length, catalog.length);
   }
 });

@@ -1,92 +1,107 @@
-import assert from "node:assert/strict";
-import test from "node:test";
-import { buildJevRequest, parseCatalog } from "../src/codes.ts";
-import { askJev } from "../src/typesafe.ts";
+import assert from 'node:assert/strict';
+import test from 'node:test';
 
+import { buildJevRequest, parseCatalog } from '../src/codes.ts';
+import { askJev } from '../src/typesafe.ts';
+
+const SUCCESS_PROBABILITY = 0.8;
 const request = buildJevRequest(
-  "A procedure was performed.",
+  'A procedure was performed.',
   parseCatalog([
-    { code: "CODE-A", system: "TEST", description: "A procedure" },
+    { code: 'CODE-A', description: 'A procedure', system: 'TEST' },
   ]),
-  "jev-latest",
+  'jev-latest',
 );
 
-test("askJev sends the documented raw HTTP request and parses its response", async () => {
-  const calls: Array<{ input: string; init?: RequestInit }> = [];
+const successfulResponse = (): Response =>
+  Response.json({
+    answers: {
+      candidate_0: {
+        choice: 'supported',
+        confidence: 0.75,
+        probabilities: { not_supported: 0.2, supported: SUCCESS_PROBABILITY },
+        type: 'choice',
+      },
+    },
+    model: 'jev-1.13.0',
+    usage: { input_tokens: 100, output_tokens: 4 },
+  });
+
+const inputUrl = (input: Parameters<typeof fetch>[0]): string => {
+  if (typeof input === 'string') {
+    return input;
+  }
+  if (input instanceof URL) {
+    return input.href;
+  }
+  return input.url;
+};
+
+await test('askJev sends the documented raw HTTP request and parses its response', async () => {
+  const calls: { init: RequestInit | undefined; input: string }[] = [];
   const response = await askJev(request, {
-    apiKey: "secret-for-test",
-    endpoint: "https://example.test/v1/systemone",
-    fetch: async (input, init) => {
-      calls.push({ input: String(input), init });
-      return Response.json({
-        model: "jev-1.13.0",
-        answers: {
-          candidate_0: {
-            type: "choice",
-            choice: "supported",
-            probabilities: { supported: 0.8, not_supported: 0.2 },
-            confidence: 0.75,
-          },
-        },
-        usage: { input_tokens: 100, output_tokens: 4 },
-      });
+    apiKey: 'secret-for-test',
+    endpoint: 'https://example.test/v1/systemone',
+    fetch: (input, init) => {
+      calls.push({ init, input: inputUrl(input) });
+      return Promise.resolve(successfulResponse());
     },
   });
 
-  assert.equal(calls.length, 1);
-  assert.equal(calls[0].input, "https://example.test/v1/systemone");
+  const [call] = calls;
+  const answer = response.answers['candidate_0'];
+  assert.ok(call);
+  assert.ok(answer);
+  assert.equal(call.input, 'https://example.test/v1/systemone');
   assert.equal(
-    new Headers(calls[0].init?.headers).get("authorization"),
-    "Bearer secret-for-test",
+    new Headers(call.init?.headers).get('authorization'),
+    'Bearer secret-for-test',
   );
-  assert.deepEqual(JSON.parse(String(calls[0].init?.body)), request);
-  assert.equal(response.answers.candidate_0.probabilities.supported, 0.8);
+  const body = call.init?.body;
+  if (typeof body !== 'string') {
+    assert.fail('Expected a string request body.');
+  }
+  assert.deepEqual(JSON.parse(body), request);
+  assert.equal(answer.probabilities['supported'], SUCCESS_PROBABILITY);
 });
 
-test("askJev surfaces authentication failures without retrying", async () => {
+await test('askJev surfaces authentication failures without retrying', async () => {
   let calls = 0;
 
   await assert.rejects(
     askJev(request, {
-      apiKey: "bad-key",
-      fetch: async () => {
+      apiKey: 'bad-key',
+      fetch: () => {
         calls += 1;
-        return new Response('{"detail":"invalid key"}', { status: 401 });
+        return Promise.resolve(
+          new Response('{"detail":"invalid key"}', { status: 401 }),
+        );
       },
     }),
-    /HTTP 401.*invalid key/,
+    /HTTP 401.*invalid key/u,
   );
   assert.equal(calls, 1);
 });
 
-test("askJev retries a 529 response", async () => {
+await test('askJev retries a 529 response', async () => {
   let calls = 0;
   const response = await askJev(request, {
-    apiKey: "secret-for-test",
-    maxAttempts: 2,
-    fetch: async () => {
+    apiKey: 'secret-for-test',
+    fetch: () => {
       calls += 1;
       if (calls === 1) {
-        return new Response("overloaded", {
-          status: 529,
-          headers: { "retry-after": "0" },
-        });
+        return Promise.resolve(
+          new Response('overloaded', {
+            headers: { 'retry-after': '0' },
+            status: 529,
+          }),
+        );
       }
-      return Response.json({
-        model: "jev-1.13.0",
-        answers: {
-          candidate_0: {
-            type: "choice",
-            choice: "supported",
-            probabilities: { supported: 0.8, not_supported: 0.2 },
-            confidence: 0.75,
-          },
-        },
-        usage: { input_tokens: 100, output_tokens: 4 },
-      });
+      return Promise.resolve(successfulResponse());
     },
+    maxAttempts: 2,
   });
 
   assert.equal(calls, 2);
-  assert.equal(response.model, "jev-1.13.0");
+  assert.equal(response.model, 'jev-1.13.0');
 });

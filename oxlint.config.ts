@@ -1,5 +1,7 @@
 import { defineConfig } from 'oxlint';
 
+const MAX_STATEMENTS = 15;
+
 export default defineConfig({
   categories: {
     correctness: 'error',
@@ -14,6 +16,16 @@ export default defineConfig({
   options: { denyWarnings: true, typeAware: true, typeCheck: true },
   overrides: [
     { files: ['*.config.ts'], rules: { 'import/no-default-export': 'off' } },
+    { files: ['src/cli.ts'], rules: { 'node/no-process-env': 'off' } },
+    { files: ['src/typesafe.ts'], rules: { 'eslint/no-await-in-loop': 'off' } },
+    {
+      files: ['tests/**/*.ts'],
+      rules: {
+        'eslint/no-magic-numbers': 'off',
+        'import/no-relative-parent-imports': 'off',
+        'promise/avoid-new': 'off',
+      },
+    },
   ],
   plugins: [
     'eslint',
@@ -26,6 +38,15 @@ export default defineConfig({
     'promise',
   ],
   rules: {
+    'eslint/func-style': 'off',
+    'eslint/max-statements': ['error', MAX_STATEMENTS],
+    'eslint/no-duplicate-imports': 'off',
+    'eslint/no-undefined': 'off',
+    'eslint/one-var': 'off',
+    'eslint/sort-imports': 'off',
+    'eslint/sort-vars': 'off',
+    'import/no-named-export': 'off',
+    'import/no-nodejs-modules': 'off',
     'no-restricted-imports': [
       'error',
       {
@@ -54,5 +75,12 @@ export default defineConfig({
         ],
       },
     ],
+    'node/no-top-level-await': 'off',
+    'oxc/no-async-await': 'off',
+    'oxc/no-optional-chaining': 'off',
+    'oxc/no-rest-spread-properties': 'off',
+    'typescript/prefer-readonly-parameter-types': 'off',
+    'typescript/promise-function-async': 'off',
+    'unicorn/numeric-separators-style': 'off',
   },
 });
