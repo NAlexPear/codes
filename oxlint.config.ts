@@ -28,7 +28,10 @@ export default defineConfig({
       files: ['src/extractor.ts'],
       rules: { 'import/no-relative-parent-imports': 'off' },
     },
-    { files: ['src/typesafe.ts'], rules: { 'eslint/no-await-in-loop': 'off' } },
+    {
+      files: ['src/openai.ts', 'src/typesafe.ts'],
+      rules: { 'eslint/no-await-in-loop': 'off' },
+    },
     {
       files: ['tests/**/*.ts'],
       rules: {

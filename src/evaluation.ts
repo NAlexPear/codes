@@ -1,11 +1,4 @@
-import type {
-  BillingCode,
-  CodeResult,
-  JevResponse,
-  ResultThresholds,
-} from './codes.ts';
-
-import { readAllCodeResults } from './codes.ts';
+import type { BillingCode } from './codes.ts';
 
 type Disposition = 'automatic' | 'manualReview' | 'omitted';
 
@@ -24,11 +17,19 @@ interface EvaluationCase {
   id: string;
 }
 
-type EvaluatedCode = CodeResult & {
-  accepted: boolean;
+type CodeDecision = BillingCode & {
+  confidence?: number;
   disposition: Disposition;
-  expected: boolean;
+  likelihood?: number;
+  needsManualReview?: boolean;
+  probabilities?: {
+    needs_review: number;
+    not_supported: number;
+    supported: number;
+  };
 };
+
+type EvaluatedCode = CodeDecision & { accepted: boolean; expected: boolean };
 
 interface CaseEvaluation {
   codes: EvaluatedCode[];
@@ -45,10 +46,8 @@ interface EvaluationCounts {
 }
 
 interface EvaluateCaseOptions {
-  catalog: readonly BillingCode[];
+  decisions: readonly CodeDecision[];
   fixture: EvaluationCase;
-  response: JevResponse;
-  thresholds: ResultThresholds;
 }
 
 const ZERO = 0;
@@ -137,41 +136,23 @@ const parseEvaluationCases = (value: unknown): EvaluationCase[] => {
   });
 };
 
-const dispositionFor = (
-  result: CodeResult,
-  thresholds: ResultThresholds,
-): Disposition => {
-  if (result.likelihood < thresholds.likelihood) {
-    return 'omitted';
-  }
-  if (result.needsManualReview) {
-    return 'manualReview';
-  }
-  return 'automatic';
-};
-
 const evaluateCase = ({
-  catalog,
+  decisions,
   fixture,
-  response,
-  thresholds,
 }: EvaluateCaseOptions): CaseEvaluation => {
   const expected = new Map(
     fixture.expectedCodes.map((code) => [identity(code), code]),
   );
-  const codes = readAllCodeResults(response, catalog, thresholds).map(
-    (result) => {
-      const disposition = dispositionFor(result, thresholds);
-      const expectedCode = expected.get(identity(result));
-      return Object.assign(result, {
-        accepted:
-          expectedCode?.acceptedDispositions.includes(disposition) ??
-          disposition !== 'automatic',
-        disposition,
-        expected: expectedCode !== undefined,
-      });
-    },
-  );
+  const codes = decisions.map((decision) => {
+    const expectedCode = expected.get(identity(decision));
+    return {
+      ...decision,
+      accepted:
+        expectedCode?.acceptedDispositions.includes(decision.disposition) ??
+        decision.disposition !== 'automatic',
+      expected: expectedCode !== undefined,
+    };
+  });
   return { codes, id: fixture.id };
 };
 
@@ -214,7 +195,14 @@ const onlyFailures = ({ codes, id }: CaseEvaluation): CaseEvaluation => ({
   id,
 });
 
-export type { CaseEvaluation, EvaluatedCode, EvaluationCase, EvaluationCounts };
+export type {
+  CaseEvaluation,
+  CodeDecision,
+  Disposition,
+  EvaluatedCode,
+  EvaluationCase,
+  EvaluationCounts,
+};
 export {
   evaluateCase,
   hasFailures,

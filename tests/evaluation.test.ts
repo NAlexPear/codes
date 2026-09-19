@@ -8,6 +8,7 @@ import catalogData from '../data/billing-codes.json' with { type: 'json' };
 import syntheticCasesData from '../data/hand-surgery-dictations.json' with { type: 'json' };
 import sourceCasesData from '../data/hand-surgery-source-evals.json' with { type: 'json' };
 import { parseCatalog } from '../src/codes.ts';
+import { decisionsFromJev } from '../src/eval-providers.ts';
 import {
   evaluateCase,
   hasFailures,
@@ -82,10 +83,12 @@ const evaluateFixtures = (
 ): ReturnType<typeof evaluateCase>[] =>
   fixtures.map((fixture) =>
     evaluateCase({
-      catalog,
+      decisions: decisionsFromJev(
+        responseFor(fixture, catalog),
+        catalog,
+        THRESHOLDS,
+      ),
       fixture,
-      response: responseFor(fixture, catalog),
-      thresholds: THRESHOLDS,
     }),
   );
 
@@ -162,10 +165,8 @@ await test('evaluation distinguishes misses, false positives, and manual review'
   };
 
   const evaluation = evaluateCase({
-    catalog: ASYMMETRIC_CATALOG,
+    decisions: decisionsFromJev(response, ASYMMETRIC_CATALOG, THRESHOLDS),
     fixture: ASYMMETRIC_FIXTURE,
-    response,
-    thresholds: THRESHOLDS,
   });
   assert.deepEqual(summarizeEvaluations([evaluation]), {
     automaticExpected: 0,
@@ -209,10 +210,8 @@ await test('manual review counts as a passing disposition', () => {
   };
 
   const evaluation = evaluateCase({
-    catalog,
+    decisions: decisionsFromJev(response, catalog, THRESHOLDS),
     fixture,
-    response,
-    thresholds: THRESHOLDS,
   });
   assert.equal(hasFailures(evaluation), false);
   assert.deepEqual(onlyFailures(evaluation).codes, []);
@@ -234,24 +233,28 @@ await test('explicit review labels reject automatic and omitted outcomes', () =>
   ]);
   assert.ok(fixture);
   const automatic = evaluateCase({
-    catalog,
+    decisions: decisionsFromJev(
+      {
+        answers: { candidate_0: answer(0.9) },
+        model: 'mock-jev',
+        usage: { input_tokens: 0, output_tokens: 0 },
+      },
+      catalog,
+      THRESHOLDS,
+    ),
     fixture,
-    response: {
-      answers: { candidate_0: answer(0.9) },
-      model: 'mock-jev',
-      usage: { input_tokens: 0, output_tokens: 0 },
-    },
-    thresholds: THRESHOLDS,
   });
   const omitted = evaluateCase({
-    catalog,
+    decisions: decisionsFromJev(
+      {
+        answers: { candidate_0: answer(0.1) },
+        model: 'mock-jev',
+        usage: { input_tokens: 0, output_tokens: 0 },
+      },
+      catalog,
+      THRESHOLDS,
+    ),
     fixture,
-    response: {
-      answers: { candidate_0: answer(0.1) },
-      model: 'mock-jev',
-      usage: { input_tokens: 0, output_tokens: 0 },
-    },
-    thresholds: THRESHOLDS,
   });
 
   assert.equal(hasFailures(automatic), true);

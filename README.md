@@ -89,19 +89,36 @@ pnpm check
 linting, strict TypeScript checks, and tests. Unit tests use only Node's
 built-in `node:test` and `node:assert/strict` modules.
 
-Run the labeled synthetic corpus against Jev separately from the deterministic
-unit suite:
+Run the labeled corpus against Jev separately from the deterministic unit suite:
 
 ```sh
 TYPESAFE_API_KEY=... pnpm eval
 ```
 
+Use the same `eval` command to compare Jev with OpenAI Responses API models.
+Repeat `--provider` and `--model` in matching order, and use `--repetitions` to
+measure consistency:
+
+```sh
+OPENAI_API_KEY=... pnpm eval --provider openai --model gpt-6-astra
+TYPESAFE_API_KEY=... OPENAI_API_KEY=... pnpm eval \
+  --provider jev --provider openai \
+  --model jev-1.13.0 --model gpt-6-astra \
+  --repetitions 3
+```
+
+Every provider receives the same dictation, catalog, candidate guidance, and
+three-way decision criteria. OpenAI uses strict Structured Outputs and returns a
+choice for every candidate; Jev retains its native probabilities and confidence
+thresholds. Both normalize to automatic, manual-review, or omitted dispositions
+before the shared scorer runs.
+
 The eval exits unsuccessfully when a candidate falls outside its accepted
-dispositions. Source-grounded cases can require either an automatic result or a
-manual-review result; candidates without explicit labels must never become
-automatic matches. The JSON output separates automatic matches, manual-review
-matches, and omitted candidates and retains each candidate's full probability
-distribution.
+dispositions. Its JSON report includes per-run failures, aggregate disposition
+counts, resolved model IDs, input and output tokens, model-call counts, and p50
+and p95 latency. Source-grounded cases can require either an automatic result or
+a manual-review result; candidates without explicit labels must never become
+automatic matches.
 
 ## License
 
