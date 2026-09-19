@@ -1,0 +1,167 @@
+[
+  {
+    "system": "CPT",
+    "code": "25000",
+    "description": "Extensor tendon-sheath release at the radial styloid"
+  },
+  {
+    "system": "CPT",
+    "code": "25112",
+    "description": "Open excision of recurrent wrist ganglion"
+  },
+  {
+    "system": "CPT",
+    "code": "25118",
+    "description": "Extensor tendon-sheath synovectomy at the wrist, one compartment"
+  },
+  {
+    "system": "CPT",
+    "code": "25447",
+    "description": "Interposition arthroplasty of an intercarpal or carpometacarpal joint"
+  },
+  {
+    "system": "CPT",
+    "code": "25609",
+    "description": "Open fixation of intra-articular distal radius fracture involving three or more fragments"
+  },
+  {
+    "system": "CPT",
+    "code": "26055",
+    "description": "Trigger digit tendon-sheath release"
+  },
+  {
+    "system": "CPT",
+    "code": "26123",
+    "description": "Partial palmar fasciectomy with release of one digit through the PIP joint"
+  },
+  {
+    "system": "CPT",
+    "code": "26125",
+    "description": "Partial palmar fasciectomy with release of each additional digit through the PIP joint"
+  },
+  {
+    "system": "CPT",
+    "code": "26356",
+    "description": "Primary zone 2 digital flexor tendon repair, each tendon"
+  },
+  {
+    "system": "CPT",
+    "code": "26480",
+    "description": "Single tendon transfer at the carpometacarpal area or dorsum of hand"
+  },
+  {
+    "system": "CPT",
+    "code": "26540",
+    "description": "Repair of collateral ligament at an MCP or IP joint"
+  },
+  {
+    "system": "CPT",
+    "code": "29846",
+    "description": "Wrist arthroscopy with TFCC excision or joint debridement"
+  },
+  {
+    "system": "CPT",
+    "code": "64718",
+    "description": "Ulnar nerve decompression or transposition at the elbow"
+  },
+  {
+    "system": "CPT",
+    "code": "64721",
+    "description": "Open median nerve decompression at the carpal tunnel"
+  },
+  {
+    "system": "CPT",
+    "code": "64772",
+    "description": "Posterior interosseous nerve neurectomy"
+  },
+  {
+    "system": "CPT",
+    "code": "64831",
+    "description": "Repair of one digital nerve"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "G56.01",
+    "description": "Carpal tunnel syndrome, right upper limb"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "G56.02",
+    "description": "Carpal tunnel syndrome, left upper limb"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "G56.22",
+    "description": "Lesion of ulnar nerve, left upper limb"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M18.12",
+    "description": "Unilateral primary osteoarthritis of first carpometacarpal joint, left hand"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M25.531",
+    "description": "Pain in right wrist"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M65.311",
+    "description": "Trigger thumb, right thumb"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M65.312",
+    "description": "Trigger thumb, left thumb"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M65.331",
+    "description": "Trigger finger, right middle finger"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M65.4",
+    "description": "Radial styloid tenosynovitis (de Quervain)"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M65.832",
+    "description": "Other synovitis and tenosynovitis, left forearm"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M67.431",
+    "description": "Ganglion, right wrist"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "M72.0",
+    "description": "Palmar fascial fibromatosis (Dupuytren)"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "S52.571A",
+    "description": "Other intra-articular fracture of lower end of right radius, initial encounter for closed fracture"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "S63.592A",
+    "description": "Other specified sprain of left wrist, initial encounter"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "S63.641A",
+    "description": "Sprain of metacarpophalangeal joint of right thumb, initial encounter"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "S64.490A",
+    "description": "Injury of digital nerve of right index finger, initial encounter"
+  },
+  {
+    "system": "ICD-10-CM",
+    "code": "S66.120A",
+    "description": "Laceration of flexor muscle, fascia and tendon of right index finger at wrist and hand level, initial encounter"
+  }
+]

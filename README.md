@@ -2,6 +2,16 @@
 
 Codes is a project for converting medical dictations into billing codes.
 
+## Usage
+
+Set `TYPESAFE_API_KEY`, then provide a dictation as a file or through stdin. The
+CLI evaluates it against the packaged internal billing-code catalog.
+
+```sh
+pnpm start --input dictation.txt
+cat dictation.txt | pnpm start
+```
+
 ## Sample data
 
 [`data/hand-surgery-dictations.json`](data/hand-surgery-dictations.json)

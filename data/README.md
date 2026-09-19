@@ -4,6 +4,9 @@
 common hand and upper-extremity procedures. Every patient and clinical event is
 fictional; the text is newly written and is not copied from a source report.
 
+`billing-codes.json` is the internal candidate catalog used by the CLI. It is a
+packaged application asset, not a user-supplied CLI input.
+
 ## Schema
 
 Each record contains:

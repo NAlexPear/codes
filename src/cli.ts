@@ -11,13 +11,13 @@ import { askJev } from './typesafe.ts';
 const ZERO = 0;
 const ONE = 1;
 const JSON_INDENT = 2;
-const HELP = `Usage: codes --codes <catalog.json> [--input <dictation.txt>] [options]
+const CATALOG_URL = new URL('../data/billing-codes.json', import.meta.url);
+const HELP = `Usage: codes [--input <dictation.txt>] [options]
 
-Scores a bounded catalog of billing-code candidates against one medical dictation.
+Scores the internal billing-code catalog against one medical dictation.
 Reads the dictation from stdin when --input is omitted and writes JSON to stdout.
 
 Options:
-  --codes <path>       JSON array of { code, system, description, guidance? }
   --input <path>       Dictation text file (default: stdin)
   --likelihood <0..1>  Minimum supported probability (default: 0.5)
   --confidence <0..1>  Minimum confidence without review (default: 0.8)
@@ -70,7 +70,6 @@ const writeResult = (output: CliOutput): void => {
 const main = async (): Promise<void> => {
   const { values } = parseArgs({
     options: {
-      codes: { type: 'string' },
       confidence: { default: '0.8', type: 'string' },
       help: { short: 'h', type: 'boolean' },
       input: { type: 'string' },
@@ -83,15 +82,12 @@ const main = async (): Promise<void> => {
     process.stdout.write(`${HELP}\n`);
     return;
   }
-  if (values.codes === undefined) {
-    throw new Error('--codes is required. Run with --help for usage.');
-  }
   const thresholds = {
     confidence: parseThreshold(values.confidence, '--confidence'),
     likelihood: parseThreshold(values.likelihood, '--likelihood'),
   };
   const [catalogText, dictation] = await Promise.all([
-    readFile(values.codes, 'utf8'),
+    readFile(CATALOG_URL, 'utf8'),
     readDictation(values.input),
   ]);
   const catalog = parseCatalog(JSON.parse(catalogText) as unknown);
