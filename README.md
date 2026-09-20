@@ -185,14 +185,14 @@ and no unlabeled code was selected automatically.
 | Accepted labeled decisions               |      324/324 (100%) |     318/324 (98.1%) |
 | Unlisted codes selected automatically    |                   0 |                   0 |
 | Review-only codes selected automatically |                   0 |                   1 |
-| Unlabeled codes sent to manual review    |                 144 |                  10 |
-| Input/output tokens                      | 7,551,573 / 513,686 | 6,105,306 / 118,809 |
-| Latency p50 / p95                        |     456 ms / 588 ms |    6.43 s / 36.84 s |
-| Total sequential runtime                 |              65.5 s |           1,202.9 s |
-| Estimated three-run cost                 |             $0.3172 |             $1.3636 |
-| Estimated cost per case                  |            $0.00230 |            $0.00988 |
+| Unlabeled codes sent to manual review    |                  17 |                  10 |
+| Input/output tokens                      | 8,985,531 / 513,685 | 6,105,306 / 118,809 |
+| Latency p50 / p95                        |     515 ms / 672 ms |    6.43 s / 36.84 s |
+| Total sequential runtime                 |              73.5 s |           1,202.9 s |
+| Estimated three-run cost                 |             $0.3774 |             $1.3636 |
+| Estimated cost per case                  |            $0.00273 |            $0.00988 |
 
-Jev was about 4.3× less expensive and 14.1× faster at median latency, with no
+Jev was about 3.6× less expensive and 12.5× faster at median latency, with no
 scoring failures across the three runs, but it produced more conservative
 manual-review suggestions. Luna reduced that review burden, while making six
 unaccepted labeled decisions, including one automatic selection that an
@@ -206,7 +206,7 @@ and
 per million input tokens and
 $1.20 per million output tokens](https://developers.openai.com/api/docs/models/gpt-5.6-luna)—without
 cached-input discounts. At 30 procedures per week for 52 weeks, the measured
-per-case rates project to about $3.59/year
+per-case rates project to about $4.27/year
 for Jev and $15.40/year for Luna when performing one final extraction per
 procedure. Streaming revisions, future catalog growth, provider price changes,
 and infrastructure costs are excluded.

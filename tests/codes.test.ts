@@ -51,15 +51,19 @@ await test('buildJevRequest creates independent structured Choice questions for 
   );
   assert.match(
     firstQuestion.instructions.decision_order.join(' '),
-    /Assess the diagnosis independently/u,
+    /Apply the candidate-specific guidance first.*Assess the diagnosis independently/u,
   );
   assert.match(
     firstQuestion.instructions.decision_order.join(' '),
     /every candidate matching a documented alternative/u,
   );
   assert.match(
+    firstQuestion.instructions.decision_order.join(' '),
+    /mutually exclusive characteristic that differs.*not_supported/u,
+  );
+  assert.match(
     firstQuestion.instructions.focus,
-    /Procedure approach, extent, or completion uncertainty must not lower/u,
+    /Procedure approach, extent, or completion uncertainty must not lower.*Do not infer ambiguity merely because nearby catalog candidates exist/u,
   );
 });
 
@@ -80,6 +84,18 @@ await test('buildJevRequest gives CPT candidates procedure-specific boundaries',
   assert.match(
     question.criteria.supported.evidence.join(' '),
     /anatomy, procedure type, approach, and extent/u,
+  );
+  assert.match(
+    question.criteria.supported.evidence.join(' '),
+    /base service described for one unit or digit remains supported/u,
+  );
+  assert.match(
+    question.instructions.decision_order.join(' '),
+    /mutually exclusive approach, extent, anatomy.*not_supported/u,
+  );
+  assert.match(
+    question.instructions.decision_order.join(' '),
+    /Apply the candidate-specific guidance first/u,
   );
 });
 

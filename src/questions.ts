@@ -25,8 +25,8 @@ const cptQuestion = (candidate: BillingCode): ChoiceQuestion => ({
   criteria: {
     needs_review: {
       reasons: [
-        'The service appears to have been performed, but the note leaves a coding distinction unresolved.',
-        'A required approach, extent, anatomy, or separate-reporting detail needs expert interpretation.',
+        'The service family appears to have been performed, but a required approach, extent, anatomy, or separate-reporting detail is omitted, indeterminate, or internally conflicting.',
+        'The dictation contains mutually conflicting values for a candidate-specific detail, and the candidate matches one documented alternative.',
       ],
       what: 'The candidate is clinically plausible, but the dictation alone is insufficient for a reliable coding decision.',
     },
@@ -34,6 +34,7 @@ const cptQuestion = (candidate: BillingCode): ChoiceQuestion => ({
       reasons: [
         'The service is only planned, historical, or mentioned as a diagnosis.',
         'A different procedure, anatomy, approach, or extent is documented.',
+        'The dictation unambiguously documents a mutually exclusive candidate-specific detail that does not match this candidate.',
         'The performed service lacks a defining clinical component of the candidate, rather than merely leaving a coding detail ambiguous.',
       ],
       what: 'The current encounter does not document that this procedure was performed.',
@@ -43,6 +44,7 @@ const cptQuestion = (candidate: BillingCode): ChoiceQuestion => ({
         'The operative description documents the performed service represented by the candidate.',
         'The anatomy, procedure type, approach, and extent match every distinguishing detail in the candidate description.',
         'Standard clinical synonyms and equivalent operative wording count as matches.',
+        'A base service described for one unit or digit remains supported when it was performed and additional units or digits are documented for a separate add-on service.',
       ],
       what: 'The current encounter documents that this procedure was performed.',
     },
@@ -50,12 +52,13 @@ const cptQuestion = (candidate: BillingCode): ChoiceQuestion => ({
   instructions: {
     candidate,
     decision_order: [
-      'Choose supported when the performed service matches the candidate’s defining clinical components.',
-      'Choose needs_review only when the service matches clinically but a coding distinction cannot be resolved from the dictation.',
-      'Choose not_supported when the service is absent, contradicted, or clinically different.',
+      'Apply the candidate-specific guidance first, then decide whether the performed service broadly matches the candidate’s procedure family. If not, choose not_supported.',
+      'When every documented candidate-specific detail matches, choose supported.',
+      'When the dictation clearly documents a mutually exclusive approach, extent, anatomy, or other detail, choose not_supported for the nonmatching candidate even when it belongs to the same procedure family.',
+      'Choose needs_review only when the service family matches and a required distinction is genuinely omitted, indeterminate, or internally conflicting.',
     ],
     focus:
-      'Compare clinical meaning rather than exact wording. Use needs_review, not not_supported, when the service is plausible but a coding distinction remains unresolved.',
+      'Compare clinical meaning rather than exact wording. Do not infer ambiguity merely because nearby catalog candidates exist. An explicit nonmatching detail contradicts a candidate; only a genuinely unresolved detail requires review.',
     inspect: '`dictation`',
     question:
       'Does `dictation` support reporting this CPT procedure candidate for the current encounter?',
@@ -67,8 +70,7 @@ const diagnosisQuestion = (candidate: BillingCode): ChoiceQuestion => ({
   criteria: {
     needs_review: {
       reasons: [
-        'The diagnosis category is plausible, but required etiology, anatomy, laterality, or encounter-status evidence is missing or ambiguous.',
-        'Choosing this candidate over a nearby diagnosis requires chart context not present in the dictation.',
+        'The diagnosis category is established, but required etiology, anatomy, laterality, digit, or encounter-status evidence is omitted or indeterminate.',
         'Different parts of the dictation explicitly document conflicting anatomy, laterality, or digit values; candidates matching either documented alternative require review.',
         'A documented TFCC tear with no clear traumatic or degenerative etiology makes a wrist sprain candidate a review case.',
       ],
@@ -77,7 +79,7 @@ const diagnosisQuestion = (candidate: BillingCode): ChoiceQuestion => ({
     not_supported: {
       reasons: [
         'The condition is ruled out, historical, merely planned for evaluation, or absent.',
-        'The documented anatomy, laterality, diagnosis, or encounter status conflicts with the candidate.',
+        'The dictation unambiguously identifies a different side, digit, structure, etiology, or encounter status, even when this candidate belongs to the same diagnosis family.',
         'The candidate is a symptom that is explained by a documented definitive diagnosis.',
       ],
       what: 'The current encounter does not establish the diagnosis represented by the candidate.',
@@ -98,14 +100,16 @@ const diagnosisQuestion = (candidate: BillingCode): ChoiceQuestion => ({
   instructions: {
     candidate,
     decision_order: [
-      'Assess the diagnosis independently from any related procedure: whether a procedure was planned, completed, aborted, or procedurally ambiguous does not determine diagnosis support.',
-      'Decide whether the documented condition broadly matches the candidate’s diagnosis category, anatomy, and laterality.',
+      'Apply the candidate-specific guidance first. Assess the diagnosis independently from any related procedure: whether a procedure was planned, completed, aborted, or procedurally ambiguous does not determine diagnosis support.',
+      'First decide whether the documented condition broadly matches the candidate’s diagnosis family. If not, choose not_supported.',
+      'Compare every explicitly documented candidate-specific characteristic, including anatomy, side, digit, etiology, and encounter status.',
+      'When the record unambiguously documents a mutually exclusive characteristic that differs from the candidate, choose not_supported; a nearby code in the same diagnosis family is not thereby plausible.',
       'When the record explicitly conflicts about a candidate-specific characteristic such as side or digit, choose needs_review for every candidate matching a documented alternative; do not treat either alternative as not_supported.',
-      'If it broadly matches but required coding specificity is missing or ambiguous, choose needs_review.',
-      'Choose not_supported only when the underlying condition is absent, contradicted, or clinically different.',
+      'When the diagnosis family matches but a required characteristic is genuinely omitted or indeterminate, choose needs_review.',
+      'When all required characteristics match, choose supported.',
     ],
     focus:
-      'Compare clinical meaning rather than exact wording. Procedure approach, extent, or completion uncertainty must not lower an otherwise explicit diagnosis. Use needs_review, not not_supported, when candidate-specific diagnosis evidence is conflicting, absent, or ambiguous.',
+      'Compare clinical meaning rather than exact wording. Procedure approach, extent, or completion uncertainty must not lower an otherwise explicit diagnosis. Do not infer ambiguity merely because nearby catalog candidates exist: explicit nonmatching specificity means not_supported, while omitted, indeterminate, or internally conflicting specificity means needs_review.',
     inspect: '`dictation`',
     question:
       'Does `dictation` support assigning this ICD-10-CM diagnosis candidate for the current encounter?',
