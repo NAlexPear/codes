@@ -108,7 +108,7 @@ pnpm check
 Build a standalone executable for the current operating system and CPU:
 
 ```sh
-pnpm build:executable
+pnpm build
 ./dist/codes --help # use .\dist\codes.exe on Windows
 ```
 
@@ -118,7 +118,8 @@ publishes the archives and checksums as a GitHub release.
 
 `pnpm check` enforces Oxfmt formatting, all Oxlint rule categories, type-aware
 linting, strict TypeScript checks, and tests. Unit tests use only Node's
-built-in `node:test` and `node:assert/strict` modules.
+built-in `node:test` and `node:assert/strict` modules. Run `pnpm fix` to apply
+all safe Oxlint fixes and Oxfmt formatting.
 
 Run the labeled corpus against Jev separately from the deterministic unit suite:
 

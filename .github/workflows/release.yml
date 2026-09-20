@@ -68,7 +68,7 @@ jobs:
           cache: pnpm
           node-version: 24
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build:executable
+      - run: pnpm build
       - name: Verify standalone executable
         env:
           BINARY: ${{ matrix.binary }}

@@ -8,15 +8,14 @@
   },
   "type": "module",
   "scripts": {
-    "build:executable": "node scripts/build-executable.ts",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
+    "build": "node scripts/build-executable.ts",
+    "check": "oxfmt --check . && oxlint . && tsc --noEmit && node --test",
+    "coverage": "node --test --experimental-test-coverage",
     "eval": "node src/eval.ts",
-    "format": "oxfmt .",
-    "format:check": "oxfmt --check .",
+    "fix": "oxlint --fix . && oxfmt .",
     "lint": "oxlint .",
     "start": "node src/cli.ts",
     "test": "node --test",
-    "test:coverage": "node --test --experimental-test-coverage",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
