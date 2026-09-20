@@ -48,20 +48,27 @@ await test('selects verbatim evidence and an actionable review reason', () => {
     dictation,
     results,
     response({
+      ambiguity_1: answer('sentence_0'),
       result_0: answer('sentence_0'),
       result_1: answer('sentence_1'),
       review_1: answer('missing_laterality'),
     }),
   );
 
-  assert.equal(Object.keys(request.questions).length, 3);
-  assert.deepEqual(enriched[0]?.evidence, [
+  assert.equal(Object.keys(request.questions).length, 4);
+  const [automatic, review] = enriched;
+  assert.deepEqual(automatic?.evidence, [
     { quote: 'The right carpal tunnel was released.' },
   ]);
-  assert.deepEqual(enriched[1]?.review, {
+  assert.ok(review);
+  assert.deepEqual(review.review, {
     action: 'Confirm the affected side.',
     category: 'missing_laterality',
   });
+  assert.deepEqual(review.evidence, [
+    { quote: 'The diagnosis line says left carpal tunnel syndrome.' },
+    { quote: 'The right carpal tunnel was released.' },
+  ]);
 });
 
 await test('rejects evidence that is not a supplied transcript sentence', () => {

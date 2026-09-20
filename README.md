@@ -53,8 +53,9 @@ pnpm start --input dictation.txt --output json
 Each returned code includes an `Evidence` row copied verbatim from the
 dictation. Codes requiring manual review also include an `Action` row naming the
 documentation issue to resolve, such as laterality, anatomy, encounter status,
-or procedure detail. JSON output exposes the same information in each code's
-`evidence` and `review` fields.
+or procedure detail. Manual-review results can include separate excerpts for the
+underlying clinical support and the unresolved detail. JSON output exposes the
+same information in each code's `evidence` and `review` fields.
 
 ### Real-time dictation
 
@@ -132,6 +133,18 @@ Run the labeled corpus against Jev separately from the deterministic unit suite:
 ```sh
 TYPESAFE_API_KEY=... pnpm eval
 ```
+
+Run the 12-case actionable-evidence benchmark through the complete Jev
+classification and enrichment pipeline:
+
+```sh
+TYPESAFE_API_KEY=... pnpm eval --evidence
+```
+
+This opt-in benchmark deterministically scores verbatim grounding, evidence
+recall, required-term sufficiency, review-category accuracy, and disposition
+stability. It also reports combined two-call latency and token usage. The
+default provider-comparison benchmark remains disposition-only.
 
 Use the same `eval` command to compare Jev with OpenAI Responses API models.
 Repeat `--provider` and `--model` in matching order, and use `--repetitions` to

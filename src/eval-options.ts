@@ -8,6 +8,7 @@ const DEFAULT_REPETITIONS = 1;
 const HELP = `Usage: pnpm eval [options]
 
 Options:
+  --evidence                 Run the Jev evidence-quality benchmark
   --provider <jev|openai>  Provider to evaluate; repeat for a comparison
   --model <model>          Model for each provider, in matching order
   --repetitions <count>    Runs per provider/model pair (default: 1)
@@ -21,6 +22,7 @@ Examples:
 `;
 
 interface EvalOptions {
+  evidence: boolean;
   help: boolean;
   repetitions: number;
   specs: ProviderSpec[];
@@ -66,6 +68,7 @@ const parseEvalOptions = (args: readonly string[]): EvalOptions => {
   const { values } = parseArgs({
     args,
     options: {
+      evidence: { type: 'boolean' },
       help: { short: 'h', type: 'boolean' },
       model: { multiple: true, type: 'string' },
       provider: { multiple: true, type: 'string' },
@@ -74,6 +77,7 @@ const parseEvalOptions = (args: readonly string[]): EvalOptions => {
     strict: true,
   });
   return {
+    evidence: values.evidence ?? false,
     help: values.help ?? false,
     repetitions: parseRepetitions(values.repetitions),
     specs: resolveSpecs(values.provider, values.model),

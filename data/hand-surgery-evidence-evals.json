@@ -1,0 +1,372 @@
+[
+  {
+    "id": "source-001-ambiguous",
+    "expectations": [
+      {
+        "system": "ICD-10-CM",
+        "code": "G56.01",
+        "accepted_evidence": ["carpal tunnel syndrome"],
+        "required_terms": ["right", "carpal tunnel"]
+      },
+      {
+        "system": "CPT",
+        "code": "64721",
+        "accepted_evidence": [
+          "carpal tunnel decompression",
+          "median nerve was decompressed"
+        ],
+        "required_terms": ["decompress"],
+        "review_categories": ["missing_procedure_detail"]
+      },
+      {
+        "system": "CPT",
+        "code": "29848",
+        "accepted_evidence": ["open or endoscopic"],
+        "required_terms": ["open", "endoscopic"],
+        "review_categories": ["missing_procedure_detail"]
+      }
+    ]
+  },
+  {
+    "id": "source-002-ambiguous",
+    "expectations": [
+      {
+        "system": "ICD-10-CM",
+        "code": "G56.01",
+        "accepted_evidence": [
+          "right open carpal tunnel release",
+          "right wrist"
+        ],
+        "required_terms": ["right"],
+        "review_categories": ["conflicting_documentation"]
+      },
+      {
+        "system": "ICD-10-CM",
+        "code": "G56.02",
+        "accepted_evidence": [
+          "left carpal tunnel syndrome",
+          "left transverse carpal ligament"
+        ],
+        "required_terms": ["left"],
+        "review_categories": ["conflicting_documentation"]
+      },
+      {
+        "system": "CPT",
+        "code": "64721",
+        "accepted_evidence": [
+          "open carpal tunnel release",
+          "open release was otherwise complete"
+        ],
+        "required_terms": ["open", "release"],
+        "review_categories": ["conflicting_documentation"]
+      }
+    ]
+  },
+  {
+    "id": "source-003-ambiguous",
+    "expectations": [
+      {
+        "system": "ICD-10-CM",
+        "code": "M65.321",
+        "accepted_evidence": ["finger is not identified"],
+        "required_terms": ["finger", "not identified"],
+        "review_categories": ["missing_anatomy"]
+      },
+      {
+        "system": "ICD-10-CM",
+        "code": "M65.331",
+        "accepted_evidence": ["finger is not identified"],
+        "required_terms": ["finger", "not identified"],
+        "review_categories": ["missing_anatomy"]
+      },
+      {
+        "system": "ICD-10-CM",
+        "code": "M65.341",
+        "accepted_evidence": ["finger is not identified"],
+        "required_terms": ["finger", "not identified"],
+        "review_categories": ["missing_anatomy"]
+      },
+      {
+        "system": "ICD-10-CM",
+        "code": "M65.351",
+        "accepted_evidence": ["finger is not identified"],
+        "required_terms": ["finger", "not identified"],
+        "review_categories": ["missing_anatomy"]
+      },
+      {
+        "system": "CPT",
+        "code": "26055",
+        "accepted_evidence": [
+          "A1 pulley release",
+          "A1 pulley in the right hand was divided"
+        ],
+        "required_terms": ["A1 pulley"],
+        "review_categories": ["missing_anatomy"]
+      }
+    ]
+  },
+  {
+    "id": "source-004-ambiguous",
+    "expectations": [
+      {
+        "system": "ICD-10-CM",
+        "code": "M65.332",
+        "accepted_evidence": [
+          "left middle trigger release",
+          "procedure list identifies the middle finger"
+        ],
+        "required_terms": ["middle"],
+        "review_categories": ["conflicting_documentation"]
+      },
+      {
+        "system": "ICD-10-CM",
+        "code": "M65.342",
+        "accepted_evidence": [
+          "left ring trigger finger",
+          "ring-finger A1 pulley"
+        ],
+        "required_terms": ["ring"],
+        "review_categories": ["conflicting_documentation"]
+      },
+      {
+        "system": "CPT",
+        "code": "26055",
+        "accepted_evidence": ["trigger release", "A1 pulley"],
+        "required_terms": ["release"],
+        "review_categories": ["conflicting_documentation"]
+      }
+    ]
+  },
+  {
+    "id": "source-005-ambiguous",
+    "expectations": [
+      {
+        "system": "ICD-10-CM",
+        "code": "M65.311",
+        "accepted_evidence": ["does not state right or left"],
+        "required_terms": ["right", "left"],
+        "review_categories": ["missing_laterality"]
+      },
+      {
+        "system": "ICD-10-CM",
+        "code": "M65.312",
+        "accepted_evidence": ["does not state right or left"],
+        "required_terms": ["right", "left"],
+        "review_categories": ["missing_laterality"]
+      },
+      {
+        "system": "CPT",
+        "code": "26055",
+        "accepted_evidence": [
+          "thumb A1 pulley release",
+          "thumb A1 pulley was exposed and divided"
+        ],
+        "required_terms": ["thumb", "A1 pulley"],
+        "review_categories": ["missing_laterality"]
+      }
+    ]
+  },
+  {
+    "id": "source-006-ambiguous",
+    "expectations": [
+      {
+        "system": "ICD-10-CM",
+        "code": "M65.321",
+        "accepted_evidence": ["does not identify the involved finger"],
+        "required_terms": ["finger", "does not identify"],
+        "review_categories": ["missing_anatomy"]
+      },
+      {
+        "system": "ICD-10-CM",
+        "code": "M65.331",
+        "accepted_evidence": ["does not identify the involved finger"],
+        "required_terms": ["finger", "does not identify"],
+        "review_categories": ["missing_anatomy"]
+      },
+      {
+        "system": "ICD-10-CM",
+        "code": "M65.341",
+        "accepted_evidence": ["does not identify the involved finger"],
+        "required_terms": ["finger", "does not identify"],
+        "review_categories": ["missing_anatomy"]
+      },
+      {
+        "system": "ICD-10-CM",
+        "code": "M65.351",
+        "accepted_evidence": ["does not identify the involved finger"],
+        "required_terms": ["finger", "does not identify"],
+        "review_categories": ["missing_anatomy"]
+      },
+      {
+        "system": "CPT",
+        "code": "26055",
+        "accepted_evidence": [
+          "A1 pulley release",
+          "A1 pulley in the right hand was divided"
+        ],
+        "required_terms": ["A1 pulley"],
+        "review_categories": ["missing_anatomy"]
+      }
+    ]
+  },
+  {
+    "id": "source-007-ambiguous",
+    "expectations": [
+      {
+        "system": "ICD-10-CM",
+        "code": "S66.120A",
+        "accepted_evidence": [
+          "right index flexor-tendon laceration",
+          "divided profundus tendon was repaired"
+        ],
+        "required_terms": ["tendon", "repair"],
+        "review_categories": ["missing_anatomy"]
+      },
+      {
+        "system": "CPT",
+        "code": "26350",
+        "accepted_evidence": ["does not locate the repair relative to zone 2"],
+        "required_terms": ["zone 2", "does not locate"],
+        "review_categories": ["missing_procedure_detail", "missing_anatomy"]
+      },
+      {
+        "system": "CPT",
+        "code": "26356",
+        "accepted_evidence": ["does not locate the repair relative to zone 2"],
+        "required_terms": ["zone 2", "does not locate"],
+        "review_categories": ["missing_procedure_detail", "missing_anatomy"]
+      }
+    ]
+  },
+  {
+    "id": "source-008-ambiguous",
+    "expectations": [
+      {
+        "system": "CPT",
+        "code": "26350",
+        "accepted_evidence": [
+          "omits the tendon zone",
+          "flexor tendon was reconstructed"
+        ],
+        "required_terms": ["tendon"],
+        "review_categories": ["missing_procedure_detail"]
+      },
+      {
+        "system": "CPT",
+        "code": "26357",
+        "accepted_evidence": [
+          "omits the tendon zone",
+          "does not establish whether a free graft was used"
+        ],
+        "required_terms": ["tendon", "graft"],
+        "review_categories": ["missing_procedure_detail"]
+      }
+    ]
+  },
+  {
+    "id": "source-009-ambiguous",
+    "expectations": [
+      {
+        "system": "ICD-10-CM",
+        "code": "M72.0",
+        "accepted_evidence": ["Dupuytren contracture"],
+        "required_terms": ["Dupuytren"]
+      },
+      {
+        "system": "CPT",
+        "code": "26123",
+        "accepted_evidence": ["does not identify or count the treated digits"],
+        "required_terms": ["digits", "does not identify or count"],
+        "review_categories": ["missing_procedure_detail", "missing_anatomy"]
+      },
+      {
+        "system": "CPT",
+        "code": "26125",
+        "accepted_evidence": ["does not identify or count the treated digits"],
+        "required_terms": ["digits", "does not identify or count"],
+        "review_categories": ["missing_procedure_detail", "missing_anatomy"]
+      }
+    ]
+  },
+  {
+    "id": "source-010-ambiguous",
+    "expectations": [
+      {
+        "system": "ICD-10-CM",
+        "code": "S63.592A",
+        "accepted_evidence": ["Left TFCC tear", "central TFCC flap"],
+        "required_terms": ["TFCC"],
+        "review_categories": ["missing_etiology"]
+      },
+      {
+        "system": "CPT",
+        "code": "29840",
+        "accepted_evidence": [
+          "Diagnostic radiocarpal arthroscopy was completed"
+        ],
+        "required_terms": ["diagnostic", "arthroscopy"],
+        "review_categories": ["separate_reporting", "missing_procedure_detail"]
+      },
+      {
+        "system": "CPT",
+        "code": "29846",
+        "accepted_evidence": [
+          "whether the flap was debrided or left untreated"
+        ],
+        "required_terms": ["debrided", "untreated"],
+        "review_categories": ["missing_procedure_detail"]
+      }
+    ]
+  },
+  {
+    "id": "source-011-ambiguous",
+    "expectations": [
+      {
+        "system": "ICD-10-CM",
+        "code": "S52.571A",
+        "accepted_evidence": [
+          "Closed right intra-articular distal radius fracture",
+          "articular surface was reduced"
+        ],
+        "required_terms": ["articular", "right"]
+      },
+      {
+        "system": "CPT",
+        "code": "25608",
+        "accepted_evidence": [
+          "number of separately fixed articular fragments is not documented"
+        ],
+        "required_terms": ["fragments", "not documented"],
+        "review_categories": ["missing_procedure_detail"]
+      },
+      {
+        "system": "CPT",
+        "code": "25609",
+        "accepted_evidence": [
+          "number of separately fixed articular fragments is not documented"
+        ],
+        "required_terms": ["fragments", "not documented"],
+        "review_categories": ["missing_procedure_detail"]
+      }
+    ]
+  },
+  {
+    "id": "source-012-ambiguous",
+    "expectations": [
+      {
+        "system": "CPT",
+        "code": "25606",
+        "accepted_evidence": ["open approach or fixed percutaneously"],
+        "required_terms": ["open", "percutaneously"],
+        "review_categories": ["missing_procedure_detail"]
+      },
+      {
+        "system": "CPT",
+        "code": "25607",
+        "accepted_evidence": ["open approach or fixed percutaneously"],
+        "required_terms": ["open", "percutaneously"],
+        "review_categories": ["missing_procedure_detail"]
+      }
+    ]
+  }
+]

@@ -23,6 +23,24 @@ const REVIEW_ACTIONS: Record<ReviewCategory, string> = {
     'Confirm that this service is separately reportable and not bundled.',
 };
 
+const REVIEW_CRITERIA: Record<ReviewCategory, string> = {
+  conflicting_documentation:
+    'The dictation explicitly gives conflicting values for the same coding detail.',
+  missing_anatomy:
+    'A required structure, digit, anatomical site, or location is missing.',
+  missing_encounter_status:
+    'The injury encounter phase or active-treatment status is missing.',
+  missing_etiology:
+    'The required traumatic, degenerative, or other cause is missing.',
+  missing_laterality: 'The affected right or left side is missing.',
+  missing_procedure_detail:
+    'A required approach, technique, extent, completion, count, or graft detail is missing.',
+  other_ambiguity:
+    'A material ambiguity remains that does not fit any more specific category.',
+  separate_reporting:
+    'Whether the service is bundled or separately reportable is unresolved.',
+};
+
 interface Evidence {
   quote: string;
 }
@@ -70,16 +88,31 @@ const evidenceQuestion = (
     },
     inspect: '`dictation`',
     question:
-      'Which supplied sentence is the strongest evidence for the coding decision? Select only an exact supplied sentence.',
+      'Which supplied sentence is the strongest evidence that the underlying diagnosis or performed service is present? Select only an exact supplied sentence.',
   },
   type: 'choice',
 });
 
+const ambiguityQuestion = (
+  result: CodeResult,
+  sentences: readonly string[],
+): EvidenceChoiceQuestion => {
+  const question = evidenceQuestion(result, sentences);
+  return {
+    ...question,
+    instructions: {
+      ...question.instructions,
+      question:
+        'Which supplied sentence best demonstrates the missing, conflicting, or unresolved detail requiring manual review? Select only an exact supplied sentence.',
+    },
+  };
+};
+
 const reviewQuestion = (result: CodeResult): EvidenceChoiceQuestion => ({
   criteria: Object.fromEntries(
-    Object.entries(REVIEW_ACTIONS).map(([category, action]) => [
+    Object.entries(REVIEW_CRITERIA).map(([category, what]) => [
       category,
-      { what: action },
+      { what },
     ]),
   ),
   instructions: {
@@ -91,11 +124,14 @@ const reviewQuestion = (result: CodeResult): EvidenceChoiceQuestion => ({
     inspect: '`dictation`',
     question:
       'What is the primary documentation issue a coding reviewer must resolve for this candidate?',
+    selection:
+      'Choose the most specific category. Use other_ambiguity only when no named category applies.',
   },
   type: 'choice',
 });
 
 const resultId = (index: number): string => `result_${index}`;
+const ambiguityId = (index: number): string => `ambiguity_${index}`;
 const reviewId = (index: number): string => `review_${index}`;
 
 const buildEvidenceRequest = (
@@ -111,6 +147,7 @@ const buildEvidenceRequest = (
   for (const [index, result] of results.entries()) {
     questions[resultId(index)] = evidenceQuestion(result, sentences);
     if (result.needsManualReview) {
+      questions[ambiguityId(index)] = ambiguityQuestion(result, sentences);
       questions[reviewId(index)] = reviewQuestion(result);
     }
   }
@@ -176,6 +213,15 @@ const readEvidenceResults = (
     const evidence = [evidenceFor(requiredAnswer(response, id), sentences, id)];
     if (!result.needsManualReview) {
       return { ...result, evidence };
+    }
+    const ambiguity = ambiguityId(index);
+    const ambiguityEvidence = evidenceFor(
+      requiredAnswer(response, ambiguity),
+      sentences,
+      ambiguity,
+    );
+    if (ambiguityEvidence.quote !== evidence[ZERO]?.quote) {
+      evidence.push(ambiguityEvidence);
     }
     const manualReviewId = reviewId(index);
     return {

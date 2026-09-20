@@ -5,6 +5,7 @@ import { parseEvalOptions } from '../src/eval-options.ts';
 
 await test('eval defaults to one Jev run', () => {
   assert.deepEqual(parseEvalOptions([]), {
+    evidence: false,
     help: false,
     repetitions: 1,
     specs: [{ model: 'jev-latest', provider: 'jev' }],
@@ -26,6 +27,7 @@ await test('eval pairs repeated providers and models', () => {
       '3',
     ]),
     {
+      evidence: false,
       help: false,
       repetitions: 3,
       specs: [
@@ -34,6 +36,10 @@ await test('eval pairs repeated providers and models', () => {
       ],
     },
   );
+});
+
+await test('eval enables the evidence benchmark explicitly', () => {
+  assert.equal(parseEvalOptions(['--evidence']).evidence, true);
 });
 
 await test('eval rejects incomplete provider configuration', () => {

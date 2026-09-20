@@ -11,20 +11,30 @@ import type {
   EvaluationCase,
   EvaluationCounts,
 } from './evaluation.ts';
+import type {
+  EvidenceCase,
+  EvidenceCaseEvaluation,
+  EvidenceCounts,
+} from './evidence-evaluation.ts';
 
 import catalogData from '../data/billing-codes.json' with { type: 'json' };
 import syntheticCasesData from '../data/hand-surgery-dictations.json' with { type: 'json' };
+import evidenceCasesData from '../data/hand-surgery-evidence-evals.json' with { type: 'json' };
 import sourceCasesData from '../data/hand-surgery-source-evals.json' with { type: 'json' };
 import { parseCatalog } from './codes.ts';
+import { runEvalCase, withEvidence } from './eval-case.ts';
 import { HELP, parseEvalOptions } from './eval-options.ts';
-import { infer } from './eval-providers.ts';
 import {
-  evaluateCase,
   hasFailures,
   onlyFailures,
   parseEvaluationCases,
   summarizeEvaluations,
 } from './evaluation.ts';
+import {
+  evidenceHasFailures,
+  parseEvidenceCases,
+  summarizeEvidence,
+} from './evidence-evaluation.ts';
 
 const FAILURE = 1;
 const JSON_INDENT = 2;
@@ -41,16 +51,17 @@ interface Usage {
   outputTokens: number;
 }
 
-interface Timing {
-  p50Ms: number;
-  p95Ms: number;
-  totalMs: number;
-}
+type Timing = Record<'p50Ms' | 'p95Ms' | 'totalMs', number>;
 
 interface EvalRun {
   cases: number;
   counts: EvaluationCounts;
   evaluations: CaseEvaluation[];
+  evidence?: {
+    counts: EvidenceCounts;
+    evaluations: EvidenceCaseEvaluation[];
+    failures: EvidenceCaseEvaluation[];
+  };
   failures: CaseEvaluation[];
   latenciesMs: number[];
   models: string[];
@@ -65,6 +76,7 @@ interface EvalSummary {
   casesPassed: number;
   casesTotal: number;
   counts: EvaluationCounts;
+  evidence?: EvidenceCounts;
   models: string[];
   provider: ProviderName;
   repetitions: number;
@@ -100,7 +112,7 @@ const addUsage = (total: Usage, current: Usage): Usage => ({
 
 interface RunModelOptions {
   catalog: ReturnType<typeof parseCatalog>;
-  fixtures: readonly EvaluationCase[];
+  fixtures: readonly (EvaluationCase | EvidenceCase)[];
   keys: ProviderKeys;
   repetition: number;
   spec: ProviderSpec;
@@ -114,38 +126,44 @@ const runModel = async ({
   spec,
 }: RunModelOptions): Promise<EvalRun> => {
   const evaluations: CaseEvaluation[] = [];
+  const evidenceEvaluations: EvidenceCaseEvaluation[] = [];
   const latenciesMs: number[] = [];
   const models = new Set<string>();
   let usage = emptyUsage();
   for (const fixture of fixtures) {
-    const started = performance.now();
-    const result = await infer({
+    const result = await runEvalCase({
       catalog,
       fixture,
       keys,
       spec,
       thresholds: THRESHOLDS,
     });
-    latenciesMs.push(performance.now() - started);
     models.add(result.model);
-    usage = addUsage(usage, { ...result.usage, modelCalls: ONE });
-    evaluations.push(evaluateCase({ decisions: result.decisions, fixture }));
+    if (result.evidence !== undefined) {
+      evidenceEvaluations.push(result.evidence);
+    }
+    usage = addUsage(usage, result.usage);
+    evaluations.push(result.evaluation);
+    latenciesMs.push(result.latencyMs);
   }
-  return {
-    cases: fixtures.length,
-    counts: summarizeEvaluations(evaluations),
-    evaluations,
-    failures: evaluations
-      .filter((evaluation) => hasFailures(evaluation))
-      .map((evaluation) => onlyFailures(evaluation)),
-    latenciesMs,
-    models: [...models],
-    provider: spec.provider,
-    repetition,
-    requestedModel: spec.model,
-    timing: timingFor(latenciesMs),
-    usage,
-  };
+  return withEvidence(
+    {
+      cases: fixtures.length,
+      counts: summarizeEvaluations(evaluations),
+      evaluations,
+      failures: evaluations
+        .filter((evaluation) => hasFailures(evaluation))
+        .map((evaluation) => onlyFailures(evaluation)),
+      latenciesMs,
+      models: [...models],
+      provider: spec.provider,
+      repetition,
+      requestedModel: spec.model,
+      timing: timingFor(latenciesMs),
+      usage,
+    },
+    evidenceEvaluations,
+  );
 };
 
 const addCounts = (
@@ -176,19 +194,35 @@ const summaryFor = (
     counts = addCounts(counts, run.counts);
     usage = addUsage(usage, run.usage);
   }
-  return {
-    casesPassed: evaluations.filter((evaluation) => !hasFailures(evaluation))
-      .length,
+  const evidence = matching.flatMap((run) => run.evidence?.evaluations ?? []);
+  const evidenceFailures = new Set(
+    evidence
+      .filter((evaluation) => evidenceHasFailures(evaluation))
+      .map(({ id }) => id),
+  );
+  const summary: EvalSummary = {
+    casesPassed: evaluations.filter(
+      (evaluation) =>
+        !hasFailures(evaluation) && !evidenceFailures.has(evaluation.id),
+    ).length,
     casesTotal: evaluations.length,
     counts,
     models: [...new Set(matching.flatMap((run) => run.models))],
     provider: spec.provider,
     repetitions: matching.length,
     requestedModel: spec.model,
-    runsPassed: matching.filter((run) => run.failures.length === ZERO).length,
+    runsPassed: matching.filter(
+      (run) =>
+        run.failures.length === ZERO &&
+        (run.evidence?.failures.length ?? ZERO) === ZERO,
+    ).length,
     timing: timingFor(matching.flatMap((run) => run.latenciesMs)),
     usage,
   };
+  if (evidence.length > ZERO) {
+    summary.evidence = summarizeEvidence(evidence);
+  }
+  return summary;
 };
 
 const runAll = async (
@@ -201,9 +235,16 @@ const runAll = async (
   thresholds: typeof THRESHOLDS;
 }> => {
   const catalog = parseCatalog(catalogData);
-  const fixtures = [syntheticCasesData, sourceCasesData].flatMap((source) =>
+  const allFixtures = [syntheticCasesData, sourceCasesData].flatMap((source) =>
     parseEvaluationCases(source),
   );
+  let fixtures: readonly (EvaluationCase | EvidenceCase)[] = allFixtures;
+  if (options.evidence) {
+    if (options.specs.some(({ provider }) => provider !== 'jev')) {
+      throw new Error('--evidence supports only the Jev provider.');
+    }
+    fixtures = parseEvidenceCases(evidenceCasesData, allFixtures);
+  }
   const keys = {
     openai: process.env['OPENAI_API_KEY'] ?? '',
     typesafe: process.env['TYPESAFE_API_KEY'] ?? '',
@@ -234,7 +275,13 @@ try {
   } else {
     const output = await runAll(options);
     process.stdout.write(`${JSON.stringify(output, undefined, JSON_INDENT)}\n`);
-    if (output.runs.some((run) => run.failures.length > ZERO)) {
+    if (
+      output.runs.some(
+        (run) =>
+          run.failures.length > ZERO ||
+          (run.evidence?.failures.length ?? ZERO) > ZERO,
+      )
+    ) {
       process.exitCode = FAILURE;
     }
   }
@@ -246,3 +293,5 @@ try {
   process.stderr.write(`codes-eval: ${message}\n`);
   process.exitCode = FAILURE;
 }
+
+export type { EvalRun };

@@ -14,6 +14,9 @@ noncommercial or no-derivatives sources.
 
 `billing-codes.json` is the internal candidate catalog used by the CLI. It is a
 packaged application asset, not a user-supplied CLI input.
+`hand-surgery-evidence-evals.json` adds deterministic evidence expectations for
+the 12 ambiguous source-grounded cases. It identifies acceptable supporting
+phrases, required clinical terms, and accepted actionable-review categories.
 
 ## Schema
 
@@ -35,6 +38,11 @@ Each record contains:
 Candidates not listed for a case are expected to remain omitted or, when
 dubious, to be sent for manual review. An explicitly labeled manual-review
 candidate fails the eval if it is automatically accepted or omitted.
+
+Evidence labels are evaluated separately. A selected quote must occur verbatim
+in the dictation, contain an accepted supporting phrase and every required term,
+preserve the original disposition, and use an accepted review category whenever
+the code is sent for manual review.
 
 ## Important limitations
 

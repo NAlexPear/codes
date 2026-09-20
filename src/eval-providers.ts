@@ -1,4 +1,9 @@
-import type { BillingCode, JevResponse, ResultThresholds } from './codes.ts';
+import type {
+  BillingCode,
+  CodeResult,
+  JevResponse,
+  ResultThresholds,
+} from './codes.ts';
 import type {
   CodeDecision,
   Disposition,
@@ -33,6 +38,7 @@ interface InferenceOptions {
 interface InferenceResult {
   decisions: CodeDecision[];
   model: string;
+  selected?: CodeResult[];
   usage: { inputTokens: number; outputTokens: number };
 }
 
@@ -99,9 +105,21 @@ const inferJev = async ({
     buildJevRequest(fixture.dictation, catalog, spec.model),
     { apiKey: keys.typesafe },
   );
+  const results = readAllCodeResults(response, catalog, thresholds);
   return {
-    decisions: decisionsFromJev(response, catalog, thresholds),
+    decisions: results.map((result) =>
+      Object.assign(result, {
+        disposition: dispositionForJev(
+          result.likelihood,
+          result.needsManualReview,
+          thresholds,
+        ),
+      }),
+    ),
     model: response.model,
+    selected: results.filter(
+      ({ likelihood }) => likelihood >= thresholds.likelihood,
+    ),
     usage: {
       inputTokens: response.usage.input_tokens,
       outputTokens: response.usage.output_tokens,
