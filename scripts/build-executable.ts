@@ -15,18 +15,19 @@ const DIST_DIRECTORY = 'dist';
 const BUNDLE_PATH = `${DIST_DIRECTORY}/codes.cjs`;
 const BLOB_PATH = `${DIST_DIRECTORY}/codes.blob`;
 const CONFIG_PATH = `${DIST_DIRECTORY}/sea-config.json`;
-let executableName = 'codes';
-if (process.platform === 'win32') {
-  executableName += '.exe';
-}
-const EXECUTABLE_PATH = `${DIST_DIRECTORY}/${executableName}`;
+const EXECUTABLE_PATH = `${DIST_DIRECTORY}/codes`;
 const SENTINEL_FUSE = 'NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2';
 const JSON_INDENT = 2;
 const EXECUTABLE_MODE = 0o755;
 const SUCCESS_EXIT_CODE = 0;
+const SUPPORTED_PLATFORMS: readonly NodeJS.Platform[] = ['darwin', 'linux'];
+
+if (!SUPPORTED_PLATFORMS.includes(process.platform)) {
+  throw new Error(`Unsupported operating system: ${process.platform}.`);
+}
 
 const run = async (command: string, args: string[]): Promise<void> => {
-  const child = spawn(command, args, { stdio: 'inherit', windowsHide: true });
+  const child = spawn(command, args, { stdio: 'inherit' });
   await once(child, 'exit');
   if (child.exitCode !== SUCCESS_EXIT_CODE) {
     throw new Error(`${command} exited with status ${String(child.exitCode)}.`);
@@ -84,8 +85,7 @@ await inject(
 
 if (process.platform === 'darwin') {
   await run('codesign', ['--sign', '-', EXECUTABLE_PATH]);
-} else if (process.platform !== 'win32') {
-  await chmod(EXECUTABLE_PATH, EXECUTABLE_MODE);
 }
+await chmod(EXECUTABLE_PATH, EXECUTABLE_MODE);
 
 process.stdout.write(`Built ${EXECUTABLE_PATH}\n`);

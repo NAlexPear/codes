@@ -4,23 +4,21 @@ Codes is a project for converting medical dictations into billing codes.
 
 ## Install
 
-Standalone executables are published for Linux (x64 and arm64), macOS (Intel and
-Apple silicon), and Windows (x64). They include the Node.js runtime and the
-billing-code catalog, so Node.js and pnpm are not required. Download the archive
-for your system from
-[GitHub Releases](https://github.com/NAlexPear/codes/releases), extract it, and
-place `codes` (or `codes.exe`) on your `PATH`.
+Standalone executables are published for Linux (x64 and arm64) and macOS (Intel
+and Apple silicon). They include the Node.js runtime and the billing-code
+catalog, so Node.js and pnpm are not required.
 
-For example, on Linux x64:
+On Linux or macOS:
 
 ```sh
-VERSION=v0.1
-curl -LO "https://github.com/NAlexPear/codes/releases/download/$VERSION/codes-$VERSION-linux-x64.tar.gz"
-tar -xzf "codes-$VERSION-linux-x64.tar.gz"
-install -Dm755 codes "$HOME/.local/bin/codes"
+curl -fsSL https://raw.githubusercontent.com/NAlexPear/codes/main/scripts/install.sh | sh
 ```
 
-Release archives have corresponding SHA-256 values in `SHA256SUMS`.
+The installer detects the operating system and architecture, verifies the
+release archive against `SHA256SUMS`, and installs the latest release. Set
+`CODES_VERSION=v0.1` to pin a version or `CODES_INSTALL_DIR` to choose the
+destination. Archives are also available directly from
+[GitHub Releases](https://github.com/NAlexPear/codes/releases).
 
 ## Demo
 
@@ -117,7 +115,7 @@ Build a standalone executable for the current operating system and CPU:
 
 ```sh
 pnpm build
-./dist/codes --help # use .\dist\codes.exe on Windows
+./dist/codes --help
 ```
 
 Pushing a `v*` tag runs the release workflow, which verifies the project, builds

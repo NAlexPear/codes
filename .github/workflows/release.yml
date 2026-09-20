@@ -40,21 +40,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - binary: codes
-            runner: ubuntu-24.04
+          - runner: ubuntu-24.04
             target: linux-x64
-          - binary: codes
-            runner: ubuntu-24.04-arm
+          - runner: ubuntu-24.04-arm
             target: linux-arm64
-          - binary: codes
-            runner: macos-15-intel
+          - runner: macos-15-intel
             target: darwin-x64
-          - binary: codes
-            runner: macos-15
+          - runner: macos-15
             target: darwin-arm64
-          - binary: codes.exe
-            runner: windows-2025
-            target: win32-x64
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v5
@@ -71,25 +64,23 @@ jobs:
       - run: pnpm build
       - name: Verify standalone executable
         env:
-          BINARY: ${{ matrix.binary }}
           TYPESAFE_API_KEY: ''
         shell: bash
         run: |
-          "$GITHUB_WORKSPACE/dist/$BINARY" --help | grep -q '^Usage: codes'
+          "$GITHUB_WORKSPACE/dist/codes" --help | grep -q '^Usage: codes'
           test_dir="$(mktemp -d)"
-          if printf '%s\n' 'Open carpal tunnel release.' | (cd "$test_dir" && "$GITHUB_WORKSPACE/dist/$BINARY") 2>error.txt; then
+          if printf '%s\n' 'Open carpal tunnel release.' | (cd "$test_dir" && "$GITHUB_WORKSPACE/dist/codes") 2>error.txt; then
             echo 'Expected the CLI to require an API key.' >&2
             exit 1
           fi
           grep -q 'TYPESAFE_API_KEY is required' error.txt
       - name: Package executable
         env:
-          BINARY: ${{ matrix.binary }}
           TARGET: ${{ matrix.target }}
         shell: bash
         run: |
           mkdir release
-          tar -czf "release/codes-${RELEASE_TAG}-${TARGET}.tar.gz" -C dist "$BINARY"
+          tar -czf "release/codes-${RELEASE_TAG}-${TARGET}.tar.gz" -C dist codes
       - uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
