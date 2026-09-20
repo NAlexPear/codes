@@ -121,12 +121,27 @@ pnpm build
 
 Pushing a `v*` tag runs the release workflow, which verifies the project, builds
 each supported platform natively, checks that its catalog is embedded, and
-publishes the archives and checksums as a GitHub release.
+publishes the archives and checksums as a GitHub release. The workflow builds
+release notes from every non-release commit title since the previous version and
+links the complete comparison.
 
 `pnpm check` enforces Oxfmt formatting, all Oxlint rule categories, type-aware
 linting, strict TypeScript checks, and tests. Unit tests use only Node's
 built-in `node:test` and `node:assert/strict` modules. Run `pnpm fix` to apply
 all safe Oxlint fixes and Oxfmt formatting.
+
+### Releasing
+
+For every release, choose the next semantic version and update `package.json`.
+Run `pnpm check` and `pnpm build`, then commit the version as
+`🔖 Release v<version>` and create an annotated `v<version>` tag. Push `main`
+before pushing the tag. The workflow rejects a tag that does not match the
+package version, so artifacts and release notes always describe the same source.
+
+Non-release commit titles are the release-note entries. Keep them concise and
+outcome-focused; the workflow omits the mechanical release commit itself. Review
+the published notes and add context in GitHub when a change needs migration or
+safety guidance beyond its commit title.
 
 Run the labeled corpus against Jev separately from the deterministic unit suite:
 
