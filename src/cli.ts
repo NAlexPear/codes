@@ -184,13 +184,12 @@ const main = async (): Promise<void> => {
   await runBatch(extract, values.input, mode);
 };
 
-try {
-  await main();
-} catch (error: unknown) {
+// Node 24 SEA requires a CommonJS bundle without top-level await.
+main().catch((error: unknown) => {
   let message = String(error);
   if (error instanceof Error) {
     ({ message } = error);
   }
   process.stderr.write(`codes: ${message}\n`);
   process.exitCode = ONE;
-}
+});

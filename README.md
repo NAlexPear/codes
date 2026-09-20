@@ -2,6 +2,26 @@
 
 Codes is a project for converting medical dictations into billing codes.
 
+## Install
+
+Standalone executables are published for Linux (x64 and arm64), macOS (Intel and
+Apple silicon), and Windows (x64). They include the Node.js runtime and the
+billing-code catalog, so Node.js and pnpm are not required. Download the archive
+for your system from
+[GitHub Releases](https://github.com/NAlexPear/codes/releases), extract it, and
+place `codes` (or `codes.exe`) on your `PATH`.
+
+For example, on Linux x64:
+
+```sh
+VERSION=v0.1
+curl -LO "https://github.com/NAlexPear/codes/releases/download/$VERSION/codes-$VERSION-linux-x64.tar.gz"
+tar -xzf "codes-$VERSION-linux-x64.tar.gz"
+install -Dm755 codes "$HOME/.local/bin/codes"
+```
+
+Release archives have corresponding SHA-256 values in `SHA256SUMS`.
+
 ## Demo
 
 ### File input
@@ -84,6 +104,17 @@ Use Node.js 24 or newer and pnpm:
 pnpm install --frozen-lockfile
 pnpm check
 ```
+
+Build a standalone executable for the current operating system and CPU:
+
+```sh
+pnpm build:executable
+./dist/codes --help # use .\dist\codes.exe on Windows
+```
+
+Pushing a `v*` tag runs the release workflow, which verifies the project, builds
+each supported platform natively, checks that its catalog is embedded, and
+publishes the archives and checksums as a GitHub release.
 
 `pnpm check` enforces Oxfmt formatting, all Oxlint rule categories, type-aware
 linting, strict TypeScript checks, and tests. Unit tests use only Node's

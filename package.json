@@ -1,6 +1,6 @@
 {
   "name": "codes",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Convert medical dictations into billing codes",
   "license": "MIT",
   "bin": {
@@ -8,6 +8,7 @@
   },
   "type": "module",
   "scripts": {
+    "build:executable": "node scripts/build-executable.ts",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
     "eval": "node src/eval.ts",
     "format": "oxfmt .",
@@ -20,9 +21,11 @@
   },
   "devDependencies": {
     "@types/node": "24.13.6",
+    "esbuild": "0.28.2",
     "oxfmt": "0.68.0",
     "oxlint": "1.83.0",
     "oxlint-tsgolint": "7.0.2002",
+    "postject": "1.0.0-alpha.6",
     "typescript": "7.0.2"
   },
   "devEngines": {

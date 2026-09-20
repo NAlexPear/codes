@@ -33,6 +33,15 @@ export default defineConfig({
       rules: { 'eslint/no-await-in-loop': 'off' },
     },
     {
+      files: ['src/cli.ts'],
+      rules: {
+        'promise/prefer-await-to-callbacks': 'off',
+        'promise/prefer-await-to-then': 'off',
+        'unicorn/prefer-top-level-await': 'off',
+      },
+    },
+    { files: ['**/*.d.ts'], rules: { 'import/unambiguous': 'off' } },
+    {
       files: ['tests/**/*.ts'],
       rules: {
         'eslint/no-magic-numbers': 'off',

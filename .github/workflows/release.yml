@@ -1,0 +1,103 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.2
+      - uses: actions/setup-node@v5
+        with:
+          cache: pnpm
+          node-version: 24
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+
+  build:
+    needs: check
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - binary: codes
+            runner: ubuntu-24.04
+            target: linux-x64
+          - binary: codes
+            runner: ubuntu-24.04-arm
+            target: linux-arm64
+          - binary: codes
+            runner: macos-15-intel
+            target: darwin-x64
+          - binary: codes
+            runner: macos-15
+            target: darwin-arm64
+          - binary: codes.exe
+            runner: windows-2025
+            target: win32-x64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.2
+      - uses: actions/setup-node@v5
+        with:
+          cache: pnpm
+          node-version: 24
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:executable
+      - name: Verify standalone executable
+        env:
+          BINARY: ${{ matrix.binary }}
+          TYPESAFE_API_KEY: ''
+        shell: bash
+        run: |
+          "$GITHUB_WORKSPACE/dist/$BINARY" --help | grep -q '^Usage: codes'
+          test_dir="$(mktemp -d)"
+          if printf '%s\n' 'Open carpal tunnel release.' | (cd "$test_dir" && "$GITHUB_WORKSPACE/dist/$BINARY") 2>error.txt; then
+            echo 'Expected the CLI to require an API key.' >&2
+            exit 1
+          fi
+          grep -q 'TYPESAFE_API_KEY is required' error.txt
+      - name: Package executable
+        env:
+          BINARY: ${{ matrix.binary }}
+          TARGET: ${{ matrix.target }}
+        shell: bash
+        run: |
+          mkdir release
+          tar -czf "release/codes-${GITHUB_REF_NAME}-${TARGET}.tar.gz" -C dist "$BINARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: ${{ matrix.target }}
+          path: release/*
+
+  release:
+    needs: build
+    permissions:
+      contents: write
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: release
+      - name: Create checksums
+        run: cd release && sha256sum codes-* > SHA256SUMS
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME" release/* --generate-notes --repo
+          "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --verify-tag
