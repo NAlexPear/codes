@@ -34,52 +34,54 @@ interface ResolvedOptions {
   timeoutMs: number;
 }
 
+interface ChoiceRequest {
+  model: string;
+  questions: Record<string, { type: 'choice' }>;
+  state: Record<string, unknown>;
+}
+
+interface ChoiceAnswer {
+  choice: string;
+  confidence: number;
+  probabilities: Record<string, number>;
+  type: 'choice';
+}
+
+interface ChoiceResponse {
+  answers: Record<string, ChoiceAnswer>;
+  model: string;
+  usage: { input_tokens: number; output_tokens: number };
+}
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
-
-const isChoice = (
-  value: unknown,
-): value is 'needs_review' | 'not_supported' | 'supported' =>
-  value === 'supported' ||
-  value === 'needs_review' ||
-  value === 'not_supported';
 
 const isInteger = (value: unknown): value is number =>
   typeof value === 'number' && Number.isInteger(value);
 
-const parseChoiceAnswer = (value: unknown): JevResponse['answers'][string] => {
+const parseChoiceAnswer = (value: unknown): ChoiceAnswer => {
   if (!isRecord(value) || !isRecord(value['probabilities'])) {
     throw new Error('TypeSafe API returned an invalid answer.');
   }
   const { choice, confidence } = value;
-  const {
-    needs_review: needsReview,
-    not_supported: notSupported,
-    supported,
-  } = value['probabilities'];
+  const probabilities: Record<string, number> = {};
+  for (const [name, probability] of Object.entries(value['probabilities'])) {
+    if (typeof probability !== 'number') {
+      throw new TypeError('TypeSafe API returned an invalid answer.');
+    }
+    probabilities[name] = probability;
+  }
   if (
     value['type'] !== 'choice' ||
-    !isChoice(choice) ||
-    typeof confidence !== 'number' ||
-    typeof supported !== 'number' ||
-    typeof needsReview !== 'number' ||
-    typeof notSupported !== 'number'
+    typeof choice !== 'string' ||
+    typeof confidence !== 'number'
   ) {
     throw new Error('TypeSafe API returned an invalid answer.');
   }
-  return {
-    choice,
-    confidence,
-    probabilities: {
-      needs_review: needsReview,
-      not_supported: notSupported,
-      supported,
-    },
-    type: 'choice',
-  };
+  return { choice, confidence, probabilities, type: 'choice' };
 };
 
-const parseUsage = (value: unknown): JevResponse['usage'] => {
+const parseUsage = (value: unknown): ChoiceResponse['usage'] => {
   if (!isRecord(value)) {
     throw new Error('TypeSafe API returned invalid usage data.');
   }
@@ -91,7 +93,7 @@ const parseUsage = (value: unknown): JevResponse['usage'] => {
   return { input_tokens: inputTokens, output_tokens: outputTokens };
 };
 
-const parseResponse = (value: unknown): JevResponse => {
+const parseResponse = (value: unknown): ChoiceResponse => {
   if (
     !isRecord(value) ||
     typeof value['model'] !== 'string' ||
@@ -131,7 +133,7 @@ const resolveOptions = (options: JevClientOptions): ResolvedOptions => ({
 });
 
 const sendRequest = async (
-  request: JevRequest,
+  request: ChoiceRequest,
   options: ResolvedOptions,
 ): Promise<Response> => {
   try {
@@ -159,10 +161,10 @@ const apiError = async (response: Response): Promise<Error> => {
   return new Error(`TypeSafe API returned HTTP ${response.status}${suffix}`);
 };
 
-const askJev = async (
-  request: JevRequest,
+const askChoices = async (
+  request: ChoiceRequest,
   clientOptions: JevClientOptions,
-): Promise<JevResponse> => {
+): Promise<ChoiceResponse> => {
   if (clientOptions.apiKey === '') {
     throw new Error('TYPESAFE_API_KEY is required.');
   }
@@ -188,5 +190,24 @@ const askJev = async (
   throw new Error('TypeSafe API retry limit reached.');
 };
 
-export type { JevClientOptions };
-export { askJev };
+const askJev = async (
+  request: JevRequest,
+  clientOptions: JevClientOptions,
+): Promise<JevResponse> => {
+  const response = await askChoices(request, clientOptions);
+  const answers: JevResponse['answers'] = {};
+  for (const [id, answer] of Object.entries(response.answers)) {
+    if (
+      answer.choice !== 'supported' &&
+      answer.choice !== 'needs_review' &&
+      answer.choice !== 'not_supported'
+    ) {
+      throw new Error('TypeSafe API returned an invalid coding answer.');
+    }
+    answers[id] = { ...answer, choice: answer.choice };
+  }
+  return { ...response, answers };
+};
+
+export type { ChoiceAnswer, ChoiceRequest, ChoiceResponse, JevClientOptions };
+export { askChoices, askJev };

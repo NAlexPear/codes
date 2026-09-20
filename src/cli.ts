@@ -8,12 +8,17 @@ import { createInterface } from 'node:readline';
 import { parseArgs } from 'node:util';
 
 import type { ResultThresholds } from './codes.ts';
-import type { Extract, ExtractionResult } from './extractor.ts';
+import type { Enrich, Extract, ExtractionResult } from './extractor.ts';
 import type { Loader } from './loader.ts';
 import type { OutputMode } from './output.ts';
 import type { StreamSnapshot } from './stream.ts';
 
-import { createExtractor, loadCatalog } from './extractor.ts';
+import {
+  createClassifier,
+  createEnricher,
+  createExtractor,
+  loadCatalog,
+} from './extractor.ts';
 import { createInPlaceRenderer, createLoader } from './loader.ts';
 import {
   formatBatchOutput,
@@ -86,12 +91,24 @@ const readLines = (path: string | undefined): AsyncIterable<string> => {
   return createInterface({ crlfDelay: Infinity, input });
 };
 
-const configuredExtractor = async (
+interface ConfiguredExtractors {
+  enrich: Enrich;
+  full: Extract;
+  provisional: Extract;
+}
+
+const configuredExtractors = async (
   apiKey: string,
   model: string,
   thresholds: ResultThresholds,
-): Promise<Extract> =>
-  createExtractor({ apiKey, catalog: await loadCatalog(), model, thresholds });
+): Promise<ConfiguredExtractors> => {
+  const options = { apiKey, catalog: await loadCatalog(), model, thresholds };
+  return {
+    enrich: createEnricher(options),
+    full: createExtractor(options),
+    provisional: createClassifier(options),
+  };
+};
 
 const streamWriter = (mode: OutputMode): ((result: StreamSnapshot) => void) => {
   let first = true;
@@ -168,20 +185,28 @@ const main = async (): Promise<void> => {
     likelihood: parseThreshold(values.likelihood, '--likelihood'),
   };
   const mode = parseOutputMode(values.output);
-  const configured = await configuredExtractor(
+  const configured = await configuredExtractors(
     process.env['TYPESAFE_API_KEY'] ?? '',
     values.model,
     thresholds,
   );
-  const extract = withLoader(configured, loaderFor(mode));
+  const loader = loaderFor(mode);
   if (values.stream === true) {
     await runStream(readLines(values.input), {
-      extract,
+      enrich: async (dictation, result) => {
+        loader.start();
+        try {
+          return await configured.enrich(dictation, result);
+        } finally {
+          loader.stop();
+        }
+      },
+      extract: withLoader(configured.provisional, loader),
       output: streamWriter(mode),
     });
     return;
   }
-  await runBatch(extract, values.input, mode);
+  await runBatch(withLoader(configured.full, loader), values.input, mode);
 };
 
 // Node 24 SEA requires a CommonJS bundle without top-level await.

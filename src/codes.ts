@@ -6,8 +6,19 @@ const ZERO = 0;
 const ONE = 1;
 const PROBABILITY_TOLERANCE = 0.02;
 
+type ReviewCategory =
+  | 'conflicting_documentation'
+  | 'missing_anatomy'
+  | 'missing_encounter_status'
+  | 'missing_etiology'
+  | 'missing_laterality'
+  | 'missing_procedure_detail'
+  | 'other_ambiguity'
+  | 'separate_reporting';
+
 type CodeResult = BillingCode & {
   confidence: number;
+  evidence?: { quote: string }[];
   likelihood: number;
   needsManualReview: boolean;
   probabilities: {
@@ -15,6 +26,7 @@ type CodeResult = BillingCode & {
     not_supported: number;
     supported: number;
   };
+  review?: { action: string; category: ReviewCategory };
 };
 
 interface ChoiceAnswer {
@@ -185,5 +197,11 @@ const readCodeResults = (
     .toSorted((left, right) => right.likelihood - left.likelihood);
 
 export type { BillingCode } from './questions.ts';
-export type { CodeResult, JevRequest, JevResponse, ResultThresholds };
+export type {
+  CodeResult,
+  JevRequest,
+  JevResponse,
+  ResultThresholds,
+  ReviewCategory,
+};
 export { buildJevRequest, parseCatalog, readAllCodeResults, readCodeResults };

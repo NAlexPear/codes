@@ -1,4 +1,4 @@
-import type { Extract, ExtractionResult } from './extractor.ts';
+import type { Enrich, Extract, ExtractionResult } from './extractor.ts';
 import type { StartEvent, TranscriptEvent } from './protocol.ts';
 import type { VoiceTermination } from './transcript.ts';
 
@@ -21,6 +21,7 @@ interface StreamSnapshot extends ExtractionResult {
 
 interface StreamSessionOptions {
   debounceMs?: number;
+  enrich?: Enrich;
   extract: Extract;
   maxDelayMs?: number;
   output: (snapshot: StreamSnapshot) => void;
@@ -33,6 +34,7 @@ interface StoredResult {
 
 class StreamSession {
   readonly #debounceMs: number;
+  readonly #enrich: Enrich | undefined;
   readonly #extract: Extract;
   readonly #maxDelayMs: number;
   readonly #output: (snapshot: StreamSnapshot) => void;
@@ -48,6 +50,7 @@ class StreamSession {
 
   public constructor(options: StreamSessionOptions) {
     this.#debounceMs = options.debounceMs ?? DEFAULT_DEBOUNCE_MS;
+    this.#enrich = options.enrich;
     this.#extract = options.extract;
     this.#maxDelayMs = options.maxDelayMs ?? DEFAULT_MAX_DELAY_MS;
     this.#output = options.output;
@@ -90,7 +93,19 @@ class StreamSession {
     if (this.#result?.revision !== this.#transcript.revision) {
       await this.#extractCurrent(false);
     }
+    await this.#enrichFinalResult();
     this.#emit(true, termination);
+  }
+
+  async #enrichFinalResult(): Promise<void> {
+    if (this.#enrich === undefined || this.#result === undefined) {
+      return;
+    }
+    const result = await this.#enrich(
+      this.#transcript.text(),
+      this.#result.result,
+    );
+    this.#result = { result, revision: this.#result.revision };
   }
 
   #markDirty(): void {

@@ -7,7 +7,10 @@ import type {
 
 import catalogData from '../data/billing-codes.json' with { type: 'json' };
 import { buildJevRequest, parseCatalog, readCodeResults } from './codes.ts';
-import { askJev } from './typesafe.ts';
+import { buildEvidenceRequest, readEvidenceResults } from './evidence.ts';
+import { askChoices, askJev } from './typesafe.ts';
+
+const ZERO = 0;
 
 interface ExtractionResult {
   manualReview: CodeResult[];
@@ -25,11 +28,15 @@ interface ExtractorOptions {
 }
 
 type Extract = (dictation: string) => Promise<ExtractionResult>;
+type Enrich = (
+  dictation: string,
+  result: ExtractionResult,
+) => Promise<ExtractionResult>;
 
 const loadCatalog = (): Promise<BillingCode[]> =>
   Promise.resolve(parseCatalog(catalogData));
 
-const createExtractor =
+const createClassifier =
   (options: ExtractorOptions): Extract =>
   async (dictation) => {
     const request = buildJevRequest(dictation, options.catalog, options.model);
@@ -50,5 +57,35 @@ const createExtractor =
     };
   };
 
-export type { Extract, ExtractionResult, ExtractorOptions };
-export { createExtractor, loadCatalog };
+const createEnricher =
+  (options: Pick<ExtractorOptions, 'apiKey' | 'model'>): Enrich =>
+  async (dictation, result) => {
+    const results = [...result.matches, ...result.manualReview];
+    if (results.length === ZERO) {
+      return result;
+    }
+    const request = buildEvidenceRequest(dictation, results, options.model);
+    const response = await askChoices(request, { apiKey: options.apiKey });
+    const enriched = readEvidenceResults(dictation, results, response);
+    return {
+      ...result,
+      manualReview: enriched.filter(
+        ({ needsManualReview }) => needsManualReview,
+      ),
+      matches: enriched.filter(({ needsManualReview }) => !needsManualReview),
+      usage: {
+        input_tokens: result.usage.input_tokens + response.usage.input_tokens,
+        output_tokens:
+          result.usage.output_tokens + response.usage.output_tokens,
+      },
+    };
+  };
+
+const createExtractor = (options: ExtractorOptions): Extract => {
+  const classify = createClassifier(options);
+  const enrich = createEnricher(options);
+  return async (dictation) => enrich(dictation, await classify(dictation));
+};
+
+export type { Enrich, Extract, ExtractionResult, ExtractorOptions };
+export { createClassifier, createEnricher, createExtractor, loadCatalog };

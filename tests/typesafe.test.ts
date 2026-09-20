@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { buildJevRequest, parseCatalog } from '../src/codes.ts';
-import { askJev } from '../src/typesafe.ts';
+import { askChoices, askJev } from '../src/typesafe.ts';
 
 const SUCCESS_PROBABILITY = 0.8;
 const request = buildJevRequest(
@@ -108,4 +108,34 @@ await test('askJev retries a 529 response', async () => {
 
   assert.equal(calls, 2);
   assert.equal(response.model, 'jev-1.13.0');
+});
+
+await test('askChoices preserves custom evidence choices', async () => {
+  const response = await askChoices(
+    {
+      model: 'jev-latest',
+      questions: { evidence: { type: 'choice' } },
+      state: { dictation: 'A sentence.' },
+    },
+    {
+      apiKey: 'secret-for-test',
+      fetch: () =>
+        Promise.resolve(
+          Response.json({
+            answers: {
+              evidence: {
+                choice: 'sentence_0',
+                confidence: 0.9,
+                probabilities: { sentence_0: 0.9 },
+                type: 'choice',
+              },
+            },
+            model: 'jev-test',
+            usage: { input_tokens: 4, output_tokens: 1 },
+          }),
+        ),
+    },
+  );
+
+  assert.equal(response.answers['evidence']?.choice, 'sentence_0');
 });

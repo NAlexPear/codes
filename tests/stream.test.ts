@@ -88,9 +88,14 @@ await test('finalizes the latest segment revision on EOF', async () => {
 
 await test('emits a provisional snapshot and reuses it when finalized', async () => {
   const dictations: string[] = [];
+  const enriched: string[] = [];
   const snapshots: StreamSnapshot[] = [];
   const session = new StreamSession({
     debounceMs: 0,
+    enrich: (dictation, extraction): Promise<ExtractionResult> => {
+      enriched.push(dictation);
+      return Promise.resolve({ ...extraction, model: 'enriched-model' });
+    },
     extract: (dictation): Promise<ExtractionResult> => {
       dictations.push(dictation);
       return Promise.resolve(RESULT);
@@ -106,11 +111,20 @@ await test('emits a provisional snapshot and reuses it when finalized', async ()
   await session.finalize({ reason: 'end-event' });
 
   assert.deepEqual(dictations, ['thumb arthroplasty']);
+  assert.deepEqual(enriched, ['thumb arthroplasty']);
   assert.deepEqual(
-    snapshots.map(({ final, termination }) => ({ final, termination })),
+    snapshots.map(({ final, model, termination }) => ({
+      final,
+      model,
+      termination,
+    })),
     [
-      { final: false, termination: undefined },
-      { final: true, termination: { reason: 'end-event' } },
+      { final: false, model: 'test-model', termination: undefined },
+      {
+        final: true,
+        model: 'enriched-model',
+        termination: { reason: 'end-event' },
+      },
     ],
   );
 });

@@ -52,6 +52,12 @@ run in a terminal. Use `--output json` or `-o json` for pretty-printed JSON:
 pnpm start --input dictation.txt --output json
 ```
 
+Each returned code includes an `Evidence` row copied verbatim from the
+dictation. Codes requiring manual review also include an `Action` row naming the
+documentation issue to resolve, such as laterality, anatomy, encounter status,
+or procedure detail. JSON output exposes the same information in each code's
+`evidence` and `review` fields.
+
 ### Real-time dictation
 
 Pass `--stream` (or `-s`) to read newline-delimited JSON (NDJSON) events from
@@ -78,8 +84,10 @@ The default stream output updates its color-coded table in place. When output is
 redirected, snapshots are appended without terminal control codes. With
 `--output json`, the CLI writes complete code snapshots as NDJSON. Provisional
 snapshots have `"final":false`; the last snapshot has `"final":true` and a
-`termination` object. Extraction is debounced, only one request runs at a time,
-and stale results are suppressed when a newer transcript revision arrives.
+`termination` object. To keep live updates responsive, evidence and review
+actions are added only to the final snapshot. Extraction is debounced, only one
+request runs at a time, and stale results are suppressed when a newer transcript
+revision arrives.
 
 ## Sample data
 

@@ -19,12 +19,17 @@ const RESULT: ExtractionResult = {
       code: 'G56.02',
       confidence: 0.6,
       description: 'Carpal tunnel syndrome, left upper limb',
+      evidence: [{ quote: 'The diagnosis line says carpal tunnel syndrome.' }],
       likelihood: 0.75,
       needsManualReview: true,
       probabilities: {
         needs_review: 0.55,
         not_supported: 0.25,
         supported: 0.2,
+      },
+      review: {
+        action: 'Confirm the affected side.',
+        category: 'missing_laterality',
       },
       system: 'ICD-10-CM',
     },
@@ -34,6 +39,7 @@ const RESULT: ExtractionResult = {
       code: '64721',
       confidence: 0.97,
       description: 'Open median nerve decompression at the carpal tunnel',
+      evidence: [{ quote: 'The transverse carpal ligament was released.' }],
       likelihood: 0.99,
       needsManualReview: false,
       probabilities: {
@@ -57,6 +63,8 @@ await test('formats batch results for a person', () => {
   assert.match(output, /Match[\s\S]*CPT 64721[\s\S]*99%[\s\S]*97%/u);
   assert.match(output, /Review[\s\S]*G56\.02[\s\S]*75%[\s\S]*60%/u);
   assert.match(output, /Open median nerve[\s\S]*carpal tunnel/u);
+  assert.match(output, /Evidence[\s\S]*transverse carpal ligament/u);
+  assert.match(output, /Action[\s\S]*Confirm the affected side/u);
   assert.doesNotMatch(output, /…/u);
   assert.doesNotMatch(output, /Billing code suggestions|Model|tokens/u);
 });
