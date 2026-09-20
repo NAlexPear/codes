@@ -10,7 +10,6 @@
   "scripts": {
     "build": "node scripts/build-executable.ts",
     "check": "oxfmt --check . && oxlint . && tsc --noEmit && node --test",
-    "coverage": "node --test --experimental-test-coverage",
     "eval": "node src/eval.ts",
     "fix": "oxlint --fix . && oxfmt .",
     "lint": "oxlint .",
