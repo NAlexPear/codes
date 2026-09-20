@@ -4,6 +4,15 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to build
+        required: true
+        type: string
+
+env:
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
 
 permissions:
   contents: read
@@ -13,6 +22,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.tag || github.ref }}
       - uses: pnpm/action-setup@v4
         with:
           version: 12.4.2
@@ -47,6 +58,8 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.tag || github.ref }}
       - uses: pnpm/action-setup@v4
         with:
           version: 12.4.2
@@ -76,7 +89,7 @@ jobs:
         shell: bash
         run: |
           mkdir release
-          tar -czf "release/codes-${GITHUB_REF_NAME}-${TARGET}.tar.gz" -C dist "$BINARY"
+          tar -czf "release/codes-${RELEASE_TAG}-${TARGET}.tar.gz" -C dist "$BINARY"
       - uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
@@ -99,5 +112,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: >-
-          gh release create "$GITHUB_REF_NAME" release/* --generate-notes --repo
-          "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --verify-tag
+          gh release create "$RELEASE_TAG" release/* --generate-notes --repo
+          "$GITHUB_REPOSITORY" --title "$RELEASE_TAG" --verify-tag
