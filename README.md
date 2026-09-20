@@ -120,6 +120,46 @@ and p95 latency. Source-grounded cases can require either an automatic result or
 a manual-review result; candidates without explicit labels must never become
 automatic matches.
 
+### Benchmark snapshot
+
+Jev 1.13 and GPT-5.6 Luna were each evaluated three times sequentially against
+the same 46-case corpus and 91-code catalog. Each provider received the same
+dictation, candidate questions, guidance, and disposition policy in one model
+call per case. A case-run passed only when every labeled decision was accepted
+and no unlabeled code was selected automatically.
+
+| Metric                                   |            Jev 1.13 |        GPT-5.6 Luna |
+| ---------------------------------------- | ------------------: | ------------------: |
+| Passing case-runs                        |      138/138 (100%) |     133/138 (96.4%) |
+| Accepted labeled decisions               |      324/324 (100%) |     318/324 (98.1%) |
+| Unlisted codes selected automatically    |                   0 |                   0 |
+| Review-only codes selected automatically |                   0 |                   1 |
+| Unlabeled codes sent to manual review    |                 144 |                  10 |
+| Input/output tokens                      | 7,551,573 / 513,686 | 6,105,306 / 118,809 |
+| Latency p50 / p95                        |     456 ms / 588 ms |    6.43 s / 36.84 s |
+| Total sequential runtime                 |              65.5 s |           1,202.9 s |
+| Estimated three-run cost                 |             $0.3172 |             $1.3636 |
+| Estimated cost per case                  |            $0.00230 |            $0.00988 |
+
+Jev was about 4.3× less expensive and 14.1× faster at median latency, with no
+scoring failures across the three runs, but it produced more conservative
+manual-review suggestions. Luna reduced that review burden, while making six
+unaccepted labeled decisions, including one automatic selection that an
+ambiguous source required to be reviewed. Luna's observed p95 includes waits
+imposed by the test account's 60,000-token-per-minute rate limit.
+
+Costs use the providers' published list prices— [Jev at
+$0.042 per million input tokens with free output](https://docs.typesafe.ai/models#current-models)
+and
+[GPT-5.6 Luna at $0.20
+per million input tokens and
+$1.20 per million output tokens](https://developers.openai.com/api/docs/models/gpt-5.6-luna)—without
+cached-input discounts. At 30 procedures per week for 52 weeks, the measured
+per-case rates project to about $3.59/year
+for Jev and $15.40/year for Luna when performing one final extraction per
+procedure. Streaming revisions, future catalog growth, provider price changes,
+and infrastructure costs are excluded.
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
